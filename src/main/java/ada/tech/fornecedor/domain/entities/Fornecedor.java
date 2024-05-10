@@ -25,6 +25,9 @@ public class Fornecedor {
     @Column(length = 14, unique = true)
     private long cnpj;
 
+    @Column(length = 11, unique = true)
+    private long nire;
+
     @Column(length = 50)
     private String nome;
 

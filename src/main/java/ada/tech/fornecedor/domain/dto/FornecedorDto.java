@@ -22,6 +22,11 @@ public class FornecedorDto {
     @Size(max = 14, message = "O CNPJ do fornecedor não pode exceder 14 caracteres")
     private long cnpj;
 
+    @Positive
+    @NotNull
+    @Size(max = 11, message = "O NIRE do fornecedor não pode exceder 11 caracteres")
+    private long nire;
+
     @NotBlank
     @NotEmpty
     @Size(max = 50, message = "O nome do fornecedor não pode exceder 50 caracteres")
