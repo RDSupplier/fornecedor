@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class Loja {
     private String farmaceutico;
     private String crf;
     private String senha;
+    private LocalDate dataAtualizacaoDados;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

@@ -44,6 +44,7 @@ public class LojaService implements ILojaService{
         loja.setFarmaceutico(pedido.getFarmaceutico());
         loja.setCrf(pedido.getCrf());
         loja.setSenha(pedido.getSenha());
+        loja.setDataAtualizacaoDados(pedido.getDataAtualizacaoDados());
         return LojaMapper.toDto(repository.save(loja));
     }
 

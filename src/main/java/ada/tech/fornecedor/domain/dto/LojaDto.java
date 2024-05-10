@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -20,5 +22,6 @@ public class LojaDto {
     private String farmaceutico;
     private String crf;
     private String senha;
+    private LocalDate dataAtualizacaoDados;
     private int id;
 }

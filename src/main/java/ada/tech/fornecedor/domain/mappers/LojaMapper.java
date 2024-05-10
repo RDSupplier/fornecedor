@@ -15,6 +15,7 @@ public class LojaMapper {
                 .farmaceutico(dto.getFarmaceutico())
                 .crf(dto.getCrf())
                 .senha(dto.getSenha())
+                .dataAtualizacaoDados(dto.getDataAtualizacaoDados())
                 .build();
     }
 
@@ -28,6 +29,7 @@ public class LojaMapper {
                 .farmaceutico(entity.getFarmaceutico())
                 .crf(entity.getCrf())
                 .senha(entity.getSenha())
+                .dataAtualizacaoDados(entity.getDataAtualizacaoDados())
                 .id(entity.getId())
                 .build();
     }

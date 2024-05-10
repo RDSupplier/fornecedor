@@ -25,7 +25,7 @@ public class ErrorResponse {
         this.errors = errors;
     }
     public static ErrorResponse createFromException(NotFoundException ex) {
-        String message = "No record of " + ex.getClazz().getSimpleName() + " found for id " + ex.getId();
+        String message = "Nenhum registro de " + ex.getClazz().getSimpleName() + " para o id " + ex.getId();
         return new ErrorResponse(message);
     }
     public static ErrorResponse createFromException(MethodArgumentNotValidException ex) {
