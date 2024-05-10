@@ -6,27 +6,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="tb_fornecedor")
+@Table(name="tb_pedido")
 
-public class Fornecedor {
+public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_endereco")
-    private Endereco enderecos;
-
-    @Column(length = 14, unique = true)
-    private long cnpj;
+    @OneToMany(mappedBy = "categoria")
+    private List<Produto> produtos = new ArrayList<>();
 
     @Column(length = 50)
-    private String nome;
-
-    private String senha;
+    private String categoria;
 }

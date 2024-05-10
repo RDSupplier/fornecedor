@@ -11,22 +11,24 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="tb_fornecedor")
+@Table(name="pedido_produto")
 
-public class Fornecedor {
+public class PedidoProduto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "id_endereco")
-    private Endereco enderecos;
+    @JoinColumn(name = "id_pedido")
+    private Pedido pedidos;
 
-    @Column(length = 14, unique = true)
-    private long cnpj;
+    @ManyToOne
+    @JoinColumn(name = "id_produto")
+    private Produto produtos;
 
-    @Column(length = 50)
-    private String nome;
+    @Column(length = 20)
+    private int quantidade;
 
-    private String senha;
+    @Column(name = "volume_total", precision = 10, scale = 2)
+    private double volumeTotal;
 }

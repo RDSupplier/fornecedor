@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @Data
@@ -16,17 +18,52 @@ import java.time.LocalDate;
 @Table(name="tb_produto")
 
 public class Produto {
-    private String nomeComercial;
-    private String principioAtivo;
-    private String apresentacao;
-    private String lote;
-    private LocalDate dataFabricacao;
-    private String fabricante;
-    private String fornecedor;
-    private double preco;
-    private boolean cargaPerigosa;
-    private double volume;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @ManyToMany
+    @JoinTable(
+            name = "produto_estoque",
+            joinColumns = @JoinColumn(name = "id_produto"),
+            inverseJoinColumns = @JoinColumn(name = "id_estoque")
+    )
+    private List<Estoque> estoquesFornecedores;
+
+    @ManyToMany(mappedBy = "produtos")
+    private List<Fabricante> fabricantes;
+
+    @OneToMany(mappedBy = "produtos")
+    private List<PedidoProduto> pedidoProduto = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "id_categoria")
+    private Categoria categoria;
+
+    @Column(name = "nome_comercial", length = 50)
+    private String nomeComercial;
+
+    @Column(name = "principio_ativo", length = 50)
+    private String principioAtivo;
+
+    @Column(name = "apresentacao", length = 100)
+    private String apresentacao;
+
+    @Column(length = 50)
+    private String lote;
+
+    @Column(name = "data_fabricacao")
+    private LocalDate dataFabricacao;
+
+    @Column(length = 50)
+    private String fabricante;
+
+    @Column(precision = 10, scale = 2)
+    private double preco;
+
+    @Column(name = "carga_perigosa")
+    private boolean cargaPerigosa;
+
+    @Column(precision = 10, scale = 2)
+    private double volume;
 }

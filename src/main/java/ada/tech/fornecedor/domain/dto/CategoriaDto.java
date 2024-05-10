@@ -12,21 +12,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties
-public class FornecedorDto {
+public class CategoriaDto {
     @Positive
     @NotNull
     private int id;
 
-    @Positive
-    @NotNull
-    @Size(max = 14, message = "O CNPJ do fornecedor não pode exceder 14 caracteres")
-    private long cnpj;
-
-    @NotBlank
     @NotEmpty
-    @Size(max = 50, message = "O nome do fornecedor não pode exceder 50 caracteres")
-    private String nome;
-
-
-    private String senha;
+    @NotBlank
+    @Size(max = 50, message = "A categoria não pode exceder 50 caracteres")
+    private String categoria;
 }
