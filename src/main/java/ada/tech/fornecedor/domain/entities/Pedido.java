@@ -35,9 +35,9 @@ public class Pedido {
 
     private LocalTime horario;
 
-    @Column(precision = 10, scale = 2)
+    @Column(precision = 10)
     private double total;
 
-    @Column(name = "volume_total", precision = 10, scale = 2)
+    @Column(name = "volume_total", precision = 10)
     private double volumeTotal;
 }

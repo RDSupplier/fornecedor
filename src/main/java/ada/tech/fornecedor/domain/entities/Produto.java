@@ -58,12 +58,12 @@ public class Produto {
     @Column(length = 50)
     private String fabricante;
 
-    @Column(precision = 10, scale = 2)
+    @Column(precision = 10)
     private double preco;
 
     @Column(name = "carga_perigosa")
     private boolean cargaPerigosa;
 
-    @Column(precision = 10, scale = 2)
+    @Column(precision = 10)
     private double volume;
 }

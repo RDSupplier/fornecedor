@@ -32,6 +32,7 @@ public class FornecedorDto {
     @Size(max = 50, message = "O nome do fornecedor não pode exceder 50 caracteres")
     private String nome;
 
-
     private String senha;
+
+    private EnderecoDto endereco;
 }

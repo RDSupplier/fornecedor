@@ -12,8 +12,7 @@ public class ProdutoMapper {
                 .apresentacao(dto.getApresentacao())
                 .lote(dto.getLote())
                 .dataFabricacao(dto.getDataFabricacao())
-                .fabricante(dto.getFabricante())
-                .fornecedor(dto.getFornecedor())
+
                 .preco(dto.getPreco())
                 .cargaPerigosa(dto.isCargaPerigosa())
                 .volume(dto.getVolume())
@@ -27,8 +26,6 @@ public class ProdutoMapper {
                 .apresentacao(entity.getApresentacao())
                 .lote(entity.getLote())
                 .dataFabricacao(entity.getDataFabricacao())
-                .fabricante(entity.getFabricante())
-                .fornecedor(entity.getFornecedor())
                 .preco(entity.getPreco())
                 .cargaPerigosa(entity.isCargaPerigosa())
                 .volume(entity.getVolume())

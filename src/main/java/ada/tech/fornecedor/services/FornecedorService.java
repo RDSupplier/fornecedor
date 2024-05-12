@@ -2,11 +2,14 @@ package ada.tech.fornecedor.services;
 
 import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
+import ada.tech.fornecedor.domain.entities.Endereco;
 import ada.tech.fornecedor.domain.entities.Fornecedor;
 import ada.tech.fornecedor.domain.mappers.FornecedorMapper;
 import ada.tech.fornecedor.repositories.IFornecedorRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,11 +18,26 @@ import java.util.List;
 public class FornecedorService implements IFornecedorService {
 
     private final IFornecedorRepository repository;
+    private final EntityManager entityManager;
 
     @Override
+    @Transactional
     public FornecedorDto criarFornecedor(FornecedorDto fornecedorDto) {
+        Endereco endereco = new Endereco();
+        endereco.setRua(fornecedorDto.getEndereco().getRua());
+        endereco.setNumero(fornecedorDto.getEndereco().getNumero());
+        endereco.setComplemento(fornecedorDto.getEndereco().getComplemento());
+        endereco.setBairro(fornecedorDto.getEndereco().getBairro());
+        endereco.setCidade(fornecedorDto.getEndereco().getCidade());
+        endereco.setEstado(fornecedorDto.getEndereco().getEstado());
+        endereco.setCep(fornecedorDto.getEndereco().getCep());
+
+        entityManager.persist(endereco);
+
         Fornecedor fornecedor = FornecedorMapper.toEntity(fornecedorDto);
-        return FornecedorMapper.toDto(repository.save(fornecedor));
+        fornecedor.setEnderecos(endereco);
+        fornecedor = repository.save(fornecedor);
+        return FornecedorMapper.toDto(fornecedor);
     }
 
     @Override

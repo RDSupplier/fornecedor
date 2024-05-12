@@ -36,8 +36,7 @@ public class ProdutoService implements IProdutoService{
         produto.setApresentacao(produtoDto.getApresentacao());
         produto.setLote(produtoDto.getLote());
         produto.setDataFabricacao(produtoDto.getDataFabricacao());
-        produto.setFabricante(produtoDto.getFabricante());
-        produto.setFornecedor(produtoDto.getFornecedor());
+
         produto.setPreco(produtoDto.getPreco());
         produto.setCargaPerigosa(produtoDto.isCargaPerigosa());
         produto.setVolume(produtoDto.getVolume());

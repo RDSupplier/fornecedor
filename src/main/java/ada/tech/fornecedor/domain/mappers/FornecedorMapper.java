@@ -10,6 +10,7 @@ public class FornecedorMapper {
                 .cnpj(dto.getCnpj())
                 .nome(dto.getNome())
                 .senha(dto.getSenha())
+                .nire(dto.getNire())
                 .build();
     }
 
@@ -18,6 +19,7 @@ public class FornecedorMapper {
                 .cnpj(entity.getCnpj())
                 .nome(entity.getNome())
                 .senha(entity.getSenha())
+                .nire(entity.getNire())
                 .id(entity.getId())
                 .build();
     }

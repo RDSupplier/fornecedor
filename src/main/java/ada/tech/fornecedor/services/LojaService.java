@@ -39,7 +39,7 @@ public class LojaService implements ILojaService{
         loja.setRegistroAnvisa(pedido.getRegistroAnvisa());
         loja.setCnpj(pedido.getCnpj());
         loja.setNomeUnidade(pedido.getNomeUnidade());
-        loja.setEndereco(pedido.getEndereco());
+
         loja.setInscricaoEstadual(pedido.getInscricaoEstadual());
         loja.setFarmaceutico(pedido.getFarmaceutico());
         loja.setCrf(pedido.getCrf());

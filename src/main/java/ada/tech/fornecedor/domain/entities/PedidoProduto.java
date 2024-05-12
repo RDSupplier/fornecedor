@@ -29,6 +29,6 @@ public class PedidoProduto {
     @Column(length = 20)
     private int quantidade;
 
-    @Column(name = "volume_total", precision = 10, scale = 2)
+    @Column(name = "volume_total", precision = 10)
     private double volumeTotal;
 }
