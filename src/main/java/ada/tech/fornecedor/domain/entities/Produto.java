@@ -1,6 +1,7 @@
 package ada.tech.fornecedor.domain.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,21 +41,26 @@ public class Produto {
     @JoinColumn(name = "id_categoria")
     private Categoria categoria;
 
+    @Size(max = 50, message = "O nome comercial do produto não pode exceder 50 caracteres")
     @Column(name = "nome_comercial", length = 50)
     private String nomeComercial;
 
+    @Size(max = 50, message = "O principio ativo do produto não pode exceder 50 caracteres")
     @Column(name = "principio_ativo", length = 50)
     private String principioAtivo;
 
+    @Size(max = 100, message = "A apresentação do produto não pode exceder 100 caracteres")
     @Column(name = "apresentacao", length = 100)
     private String apresentacao;
 
+    @Size(max = 50, message = "O lote do produto não pode exceder 50 caracteres")
     @Column(length = 50)
     private String lote;
 
     @Column(name = "data_fabricacao")
     private LocalDate dataFabricacao;
 
+    @Size(max = 50, message = "O nome do fabricante do produto não pode exceder 50 caracteres")
     @Column(length = 50)
     private String fabricante;
 
@@ -66,4 +72,6 @@ public class Produto {
 
     @Column(precision = 10)
     private double volume;
+
+    private String imagem;
 }

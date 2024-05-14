@@ -1,6 +1,7 @@
 package ada.tech.fornecedor.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,5 +35,6 @@ public class FornecedorDto {
 
     private String senha;
 
+    @JsonProperty("endereco")
     private EnderecoDto endereco;
 }

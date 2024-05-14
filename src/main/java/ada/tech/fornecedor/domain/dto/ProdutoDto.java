@@ -2,6 +2,7 @@ package ada.tech.fornecedor.domain.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,9 @@ public class ProdutoDto {
     @Positive
     @NotNull
     private int id;
+
+    @JsonProperty("categoria")
+    private CategoriaDto categoria;
 
     @NotBlank
     @NotEmpty
@@ -50,4 +54,8 @@ public class ProdutoDto {
     @Positive
     @NotNull
     private double volume;
+
+    @NotBlank
+    @NotEmpty
+    private String imagem;
 }

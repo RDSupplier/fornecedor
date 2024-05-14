@@ -1,6 +1,7 @@
 package ada.tech.fornecedor.domain.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,9 +29,11 @@ public class Fabricante {
     )
     private List<Produto> produtos;
 
+    @Size(max = 14, message = "O CNPJ do fabricante não pode exceder 14 caracteres")
     @Column(length = 14, unique = true)
     private long cnpj;
 
+    @Size(max = 50, message = "O nome do fabricante não pode exceder 50 caracteres")
     @Column(length = 50)
     private String nome;
 }

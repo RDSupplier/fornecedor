@@ -4,6 +4,7 @@ import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.domain.entities.Endereco;
 import ada.tech.fornecedor.domain.entities.Fornecedor;
+import ada.tech.fornecedor.domain.mappers.EnderecoMapper;
 import ada.tech.fornecedor.domain.mappers.FornecedorMapper;
 import ada.tech.fornecedor.repositories.IFornecedorRepository;
 import jakarta.persistence.EntityManager;
@@ -23,14 +24,7 @@ public class FornecedorService implements IFornecedorService {
     @Override
     @Transactional
     public FornecedorDto criarFornecedor(FornecedorDto fornecedorDto) {
-        Endereco endereco = new Endereco();
-        endereco.setRua(fornecedorDto.getEndereco().getRua());
-        endereco.setNumero(fornecedorDto.getEndereco().getNumero());
-        endereco.setComplemento(fornecedorDto.getEndereco().getComplemento());
-        endereco.setBairro(fornecedorDto.getEndereco().getBairro());
-        endereco.setCidade(fornecedorDto.getEndereco().getCidade());
-        endereco.setEstado(fornecedorDto.getEndereco().getEstado());
-        endereco.setCep(fornecedorDto.getEndereco().getCep());
+       Endereco endereco = EnderecoMapper.toEntity(fornecedorDto.getEndereco());
 
         entityManager.persist(endereco);
 

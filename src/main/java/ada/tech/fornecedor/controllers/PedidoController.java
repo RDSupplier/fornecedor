@@ -58,4 +58,12 @@ public class PedidoController {
         pedidoService.deletarPedido(id);
         return ResponseEntity.noContent().build();
     }
+
+//    @GetMapping("/{id}/distancia")
+//    public ResponseEntity<String> calcularDistanciaPedido(
+//            @PathVariable("id") int id
+//    ) throws NotFoundException {
+//        String distancia = String.valueOf(calcularDistanciaPedido(id));
+//        return ResponseEntity.ok(distancia);
+//    }
 }

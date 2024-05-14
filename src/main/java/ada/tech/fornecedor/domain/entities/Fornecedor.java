@@ -1,6 +1,7 @@
 package ada.tech.fornecedor.domain.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,13 +19,15 @@ public class Fornecedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_endereco")
     private Endereco enderecos;
 
+    @Size(max = 14, message = "O CNPJ do fornecedor não pode exceder 14 caracteres")
     @Column(length = 14, unique = true)
     private long cnpj;
 
+    @Size(max = 11, message = "O NIRE do fornecedor não pode exceder 11 caracteres")
     @Column(length = 11, unique = true)
     private long nire;
 

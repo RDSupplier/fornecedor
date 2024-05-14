@@ -1,6 +1,7 @@
 package ada.tech.fornecedor.domain.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class PedidoProduto {
     @JoinColumn(name = "id_produto")
     private Produto produtos;
 
+    @Size(max = 20, message = "A quantidade de produtos do pedido não pode exceder 20 caracteres")
     @Column(length = 20)
     private int quantidade;
 
