@@ -29,23 +29,18 @@ public class ProdutoService implements IProdutoService{
     @Transactional
     public ProdutoDto criarProduto(ProdutoDto produtoDto) {
         List<Categoria> categorias = CategoriaMapper.toEntityList(produtoDto.getCategorias());
-        List<Fabricante> fabricantes = FabricanteMapper.toEntityList(produtoDto.getFabricantes());
+        Fabricante fabricante = FabricanteMapper.toEntity(produtoDto.getFabricante());
 
         categorias.forEach(categoria -> {
             categoria.setProdutos(new ArrayList<>());
-//            entityManager.persist(categoria);
             entityManager.merge(categoria);
         });
 
-        fabricantes.forEach(fabricante -> {
-            fabricante.setProdutos(new ArrayList<>());
-            entityManager.merge(fabricante);
-//            entityManager.persist(fabricante);
-        });
+        entityManager.merge(fabricante);
 
         Produto produto = ProdutoMapper.toEntity(produtoDto);
         produto.setCategorias(categorias);
-        produto.setFabricantes(fabricantes);
+        produto.setFabricante(fabricante);
 
         produto = repository.save(produto);
 
@@ -55,12 +50,7 @@ public class ProdutoService implements IProdutoService{
             entityManager.merge(categoria);
         });
 
-        fabricantes.forEach(fabricante -> {
-            fabricante.getProdutos().add(finalProduto);
-            entityManager.merge(fabricante);
-        });
-
-        return ProdutoMapper.toDto(finalProduto);
+        return ProdutoMapper.toDto(produto);
     }
 
     public List<ProdutoDto> listarProdutos() {
@@ -78,7 +68,8 @@ public class ProdutoService implements IProdutoService{
         produto.setApresentacao(produtoDto.getApresentacao());
         produto.setLote(produtoDto.getLote());
         produto.setDataFabricacao(produtoDto.getDataFabricacao());
-
+        produto.setCodigoBarras(produtoDto.getCodigoBarras());
+        produto.setImagem(produtoDto.getImagem());
         produto.setPreco(produtoDto.getPreco());
         produto.setCargaPerigosa(produtoDto.isCargaPerigosa());
         produto.setVolume(produtoDto.getVolume());

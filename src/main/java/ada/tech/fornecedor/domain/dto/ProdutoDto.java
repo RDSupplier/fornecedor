@@ -24,7 +24,7 @@ public class ProdutoDto {
     private int id;
 
     @JsonProperty("fabricantes")
-    private List<FabricanteDto> fabricantes = new ArrayList<>();
+    private FabricanteDto fabricante;
 
     @JsonProperty("categorias")
     private List<CategoriaDto> categorias = new ArrayList<>();
@@ -51,12 +51,6 @@ public class ProdutoDto {
 
     private LocalDate dataFabricacao;
 
-    @NotBlank
-    @NotEmpty
-    @Size(max = 50, message = "O fabricante não pode exceder 50 caracteres")
-    private String fabricante;
-
-
     @PositiveOrZero
     private double preco;
 
@@ -69,4 +63,9 @@ public class ProdutoDto {
     @NotBlank
     @NotEmpty
     private String imagem;
+
+    @NotBlank
+    @NotEmpty
+    @NotNull
+    private String codigoBarras;
 }

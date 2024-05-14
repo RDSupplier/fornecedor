@@ -22,12 +22,7 @@ public class Fabricante {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany
-    @JoinTable(
-            name = "fabricante_produto",
-            joinColumns = @JoinColumn(name = "id_fabricante"),
-            inverseJoinColumns = @JoinColumn(name = "id_produto")
-    )
+    @OneToMany(mappedBy = "fabricante")
     private List<Produto> produtos = new ArrayList<>();
 
     @Size(max = 14, message = "O CNPJ do fabricante não pode exceder 14 caracteres")

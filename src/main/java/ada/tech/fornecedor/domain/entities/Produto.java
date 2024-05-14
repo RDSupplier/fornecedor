@@ -31,8 +31,9 @@ public class Produto {
     )
     private List<Estoque> estoquesFornecedores;
 
-    @ManyToMany(mappedBy = "produtos")
-    private List<Fabricante> fabricantes = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "id_fabricante")
+    private Fabricante fabricante;
 
     @OneToMany(mappedBy = "produtos")
     private List<PedidoProduto> pedidoProduto = new ArrayList<>();
@@ -69,4 +70,8 @@ public class Produto {
     private double volume;
 
     private String imagem;
+
+    @Column(name = "codigo_barras", length = 13)
+    @Size(max = 13, message = "O código de barras não exceder 13 caracteres")
+    private String codigoBarras;
 }
