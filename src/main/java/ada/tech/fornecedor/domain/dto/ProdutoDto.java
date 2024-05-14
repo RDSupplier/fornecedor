@@ -51,6 +51,12 @@ public class ProdutoDto {
 
     private LocalDate dataFabricacao;
 
+    @NotBlank
+    @NotEmpty
+    @Size(max = 50, message = "O fabricante não pode exceder 50 caracteres")
+    private String fabricante;
+
+
     @PositiveOrZero
     private double preco;
 
