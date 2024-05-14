@@ -23,7 +23,7 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class WebSecurityConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/fornecedor").allowedOrigins("*");
+        registry.addMapping("/fornecedor/produto").allowedOrigins("*");
         registry.addMapping("/produto").allowedOrigins("*");
         registry.addMapping("/loja").allowedOrigins("*");
 
