@@ -15,14 +15,19 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="tb_pedido")
+@Table(name="tb_categoria")
 
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToMany(mappedBy = "categoria")
+    @ManyToMany
+    @JoinTable(
+            name = "categoria_produto",
+            joinColumns = @JoinColumn(name = "id_categoria"),
+            inverseJoinColumns = @JoinColumn(name = "id_produto")
+    )
     private List<Produto> produtos = new ArrayList<>();
 
     @Size(max = 50, message = "O nome da categoria do produto não pode exceder 50 caracteres")

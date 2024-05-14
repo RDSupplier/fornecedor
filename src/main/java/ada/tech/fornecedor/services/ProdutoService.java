@@ -2,23 +2,65 @@ package ada.tech.fornecedor.services;
 
 import ada.tech.fornecedor.domain.dto.ProdutoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
+import ada.tech.fornecedor.domain.entities.Categoria;
+import ada.tech.fornecedor.domain.entities.Fabricante;
 import ada.tech.fornecedor.domain.entities.Produto;
+import ada.tech.fornecedor.domain.mappers.CategoriaMapper;
+import ada.tech.fornecedor.domain.mappers.FabricanteMapper;
 import ada.tech.fornecedor.domain.mappers.ProdutoMapper;
 import ada.tech.fornecedor.repositories.IProdutoRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProdutoService implements IProdutoService{
 
     private final IProdutoRepository repository;
+    private final EntityManager entityManager;
 
+    @Override
+    @Transactional
     public ProdutoDto criarProduto(ProdutoDto produtoDto) {
+        List<Categoria> categorias = CategoriaMapper.toEntityList(produtoDto.getCategorias());
+        List<Fabricante> fabricantes = FabricanteMapper.toEntityList(produtoDto.getFabricantes());
+
+        categorias.forEach(categoria -> {
+            categoria.setProdutos(new ArrayList<>());
+//            entityManager.persist(categoria);
+            entityManager.merge(categoria);
+        });
+
+        fabricantes.forEach(fabricante -> {
+            fabricante.setProdutos(new ArrayList<>());
+            entityManager.merge(fabricante);
+//            entityManager.persist(fabricante);
+        });
+
         Produto produto = ProdutoMapper.toEntity(produtoDto);
-        return ProdutoMapper.toDto(repository.save(produto));
+        produto.setCategorias(categorias);
+        produto.setFabricantes(fabricantes);
+
+        produto = repository.save(produto);
+
+        Produto finalProduto = produto;
+        categorias.forEach(categoria -> {
+            categoria.getProdutos().add(finalProduto);
+            entityManager.merge(categoria);
+        });
+
+        fabricantes.forEach(fabricante -> {
+            fabricante.getProdutos().add(finalProduto);
+            entityManager.merge(fabricante);
+        });
+
+        return ProdutoMapper.toDto(finalProduto);
     }
 
     public List<ProdutoDto> listarProdutos() {

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Builder
@@ -27,7 +28,7 @@ public class Fabricante {
             joinColumns = @JoinColumn(name = "id_fabricante"),
             inverseJoinColumns = @JoinColumn(name = "id_produto")
     )
-    private List<Produto> produtos;
+    private List<Produto> produtos = new ArrayList<>();
 
     @Size(max = 14, message = "O CNPJ do fabricante não pode exceder 14 caracteres")
     @Column(length = 14, unique = true)

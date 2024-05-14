@@ -32,14 +32,13 @@ public class Produto {
     private List<Estoque> estoquesFornecedores;
 
     @ManyToMany(mappedBy = "produtos")
-    private List<Fabricante> fabricantes;
+    private List<Fabricante> fabricantes = new ArrayList<>();
 
     @OneToMany(mappedBy = "produtos")
     private List<PedidoProduto> pedidoProduto = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "id_categoria")
-    private Categoria categoria;
+    @ManyToMany(mappedBy = "produtos")
+    private List<Categoria> categorias = new ArrayList<>();
 
     @Size(max = 50, message = "O nome comercial do produto não pode exceder 50 caracteres")
     @Column(name = "nome_comercial", length = 50)
@@ -59,10 +58,6 @@ public class Produto {
 
     @Column(name = "data_fabricacao")
     private LocalDate dataFabricacao;
-
-    @Size(max = 50, message = "O nome do fabricante do produto não pode exceder 50 caracteres")
-    @Column(length = 50)
-    private String fabricante;
 
     @Column(precision = 10)
     private double preco;

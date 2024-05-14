@@ -12,10 +12,13 @@ public class ProdutoMapper {
                 .apresentacao(dto.getApresentacao())
                 .lote(dto.getLote())
                 .dataFabricacao(dto.getDataFabricacao())
-
+                .categorias(CategoriaMapper.toEntityList(dto.getCategorias()))
+                .fabricantes(FabricanteMapper.toEntityList(dto.getFabricantes()))
                 .preco(dto.getPreco())
                 .cargaPerigosa(dto.isCargaPerigosa())
                 .volume(dto.getVolume())
+                .id(dto.getId())
+                .imagem(dto.getImagem())
                 .build();
     }
 
@@ -26,10 +29,13 @@ public class ProdutoMapper {
                 .apresentacao(entity.getApresentacao())
                 .lote(entity.getLote())
                 .dataFabricacao(entity.getDataFabricacao())
+                .categorias(CategoriaMapper.toDtoList(entity.getCategorias()))
+                .fabricantes(FabricanteMapper.toDtoList(entity.getFabricantes()))
                 .preco(entity.getPreco())
                 .cargaPerigosa(entity.isCargaPerigosa())
                 .volume(entity.getVolume())
                 .id(entity.getId())
+                .imagem(entity.getImagem())
                 .build();
     }
 }

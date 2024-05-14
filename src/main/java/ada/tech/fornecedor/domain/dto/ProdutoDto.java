@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,8 +23,11 @@ public class ProdutoDto {
     @NotNull
     private int id;
 
-    @JsonProperty("categoria")
-    private CategoriaDto categoria;
+    @JsonProperty("fabricantes")
+    private List<FabricanteDto> fabricantes = new ArrayList<>();
+
+    @JsonProperty("categorias")
+    private List<CategoriaDto> categorias = new ArrayList<>();
 
     @NotBlank
     @NotEmpty
