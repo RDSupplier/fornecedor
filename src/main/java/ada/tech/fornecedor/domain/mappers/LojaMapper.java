@@ -11,10 +11,10 @@ public class LojaMapper {
                 .cnpj(dto.getCnpj())
                 .nomeUnidade(dto.getNomeUnidade())
                 .inscricaoEstadual(dto.getInscricaoEstadual())
-                .farmaceutico(dto.getFarmaceutico())
+                .farmaceutico_responsavel(dto.getFarmaceutico_responsavel())
                 .crf(dto.getCrf())
                 .senha(dto.getSenha())
-                .dataAtualizacaoDados(dto.getDataAtualizacaoDados())
+                .data_atualizacao(dto.getData_atualizacao())
                 .build();
     }
 
@@ -24,10 +24,10 @@ public class LojaMapper {
                 .cnpj(entity.getCnpj())
                 .nomeUnidade(entity.getNomeUnidade())
                 .inscricaoEstadual(entity.getInscricaoEstadual())
-                .farmaceutico(entity.getFarmaceutico())
+                .farmaceutico_responsavel(entity.getFarmaceutico_responsavel())
                 .crf(entity.getCrf())
                 .senha(entity.getSenha())
-                .dataAtualizacaoDados(entity.getDataAtualizacaoDados())
+                .data_atualizacao(entity.getData_atualizacao())
                 .id(entity.getId())
                 .build();
     }

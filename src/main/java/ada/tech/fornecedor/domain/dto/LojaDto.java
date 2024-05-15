@@ -2,6 +2,7 @@ package ada.tech.fornecedor.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +44,7 @@ public class LojaDto {
     @NotBlank
     @NotEmpty
     @Size(max = 50, message = "O nome do farmacêutico responsável não pode exceder 50 caracteres")
-    private String farmaceutico;
+    private String farmaceutico_responsavel;
 
     @Positive(message = "O CRF deve ser um número positivo")
     @NotNull
@@ -54,5 +55,8 @@ public class LojaDto {
     @NotEmpty
     private String senha;
 
-    private LocalDate dataAtualizacaoDados;
+    private LocalDate data_atualizacao;
+
+    @JsonProperty("endereco")
+    private EnderecoDto endereco;
 }

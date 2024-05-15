@@ -2,9 +2,13 @@ package ada.tech.fornecedor.services;
 
 import ada.tech.fornecedor.domain.dto.LojaDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
+import ada.tech.fornecedor.domain.entities.Endereco;
 import ada.tech.fornecedor.domain.entities.Loja;
+import ada.tech.fornecedor.domain.mappers.EnderecoMapper;
 import ada.tech.fornecedor.domain.mappers.LojaMapper;
 import ada.tech.fornecedor.repositories.ILojaRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +20,19 @@ import java.util.List;
 public class LojaService implements ILojaService{
 
     private final ILojaRepository repository;
+    private final EntityManager entityManager;
 
     @Override
-    public LojaDto criarLoja(LojaDto pedido) {
-        Loja loja = LojaMapper.toEntity(pedido);
-        return LojaMapper.toDto(repository.save(loja));
+    @Transactional
+    public LojaDto criarLoja(LojaDto lojaDto) {
+        Endereco endereco = EnderecoMapper.toEntity(lojaDto.getEndereco());
+
+        entityManager.persist(endereco);
+
+        Loja loja = LojaMapper.toEntity(lojaDto);
+        loja.setEnderecos(endereco);
+        loja = repository.save(loja);
+        return LojaMapper.toDto(loja);
     }
 
     @Override
@@ -41,10 +53,10 @@ public class LojaService implements ILojaService{
         loja.setNomeUnidade(pedido.getNomeUnidade());
 
         loja.setInscricaoEstadual(pedido.getInscricaoEstadual());
-        loja.setFarmaceutico(pedido.getFarmaceutico());
+        loja.setFarmaceutico_responsavel(pedido.getFarmaceutico_responsavel());
         loja.setCrf(pedido.getCrf());
         loja.setSenha(pedido.getSenha());
-        loja.setDataAtualizacaoDados(pedido.getDataAtualizacaoDados());
+        loja.setData_atualizacao(pedido.getData_atualizacao());
         return LojaMapper.toDto(repository.save(loja));
     }
 

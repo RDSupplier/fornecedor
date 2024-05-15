@@ -21,7 +21,7 @@ public class Loja {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_endereco")
     private Endereco enderecos;
 
@@ -43,7 +43,7 @@ public class Loja {
 
     @Size(max = 50, message = "O nome do farmacêutico responsável pela loja não pode exceder 50 caracteres")
     @Column(name = "farmaceutico_responsavel", length = 50)
-    private String farmaceutico;
+    private String farmaceutico_responsavel;
 
     @Size(max = 5, message = "O CRF não pode exceder 5 caracteres")
     @Column(unique = true, length = 5)
@@ -52,5 +52,5 @@ public class Loja {
     private String senha;
 
     @Column(name = "data_atualizacao")
-    private LocalDate dataAtualizacaoDados;
+    private LocalDate data_atualizacao;
 }
