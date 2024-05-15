@@ -2,7 +2,6 @@ package ada.tech.fornecedor.services;
 
 import ada.tech.fornecedor.domain.dto.PedidoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
-import ada.tech.fornecedor.domain.entities.Endereco;
 import ada.tech.fornecedor.domain.entities.Pedido;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
 import ada.tech.fornecedor.repositories.IPedidoRepository;
@@ -68,7 +67,7 @@ public class PedidoService implements IPedidoService {
         int cepFornecedor = pedido.getPedidoProduto()
                 .get(0)
                 .getProdutos()
-                .getEstoquesFornecedores()
+                .getEstoques()
                 .get(0)
                 .getFornecedor()
                 .getEnderecos()

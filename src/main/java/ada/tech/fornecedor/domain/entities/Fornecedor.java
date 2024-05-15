@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder
 @Data
 @AllArgsConstructor
@@ -19,9 +22,12 @@ public class Fornecedor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_endereco")
     private Endereco enderecos;
+
+    @OneToMany(mappedBy = "fornecedor")
+    private List<Estoque> estoques = new ArrayList<>();
 
     @Size(max = 14, message = "O CNPJ do fornecedor não pode exceder 14 caracteres")
     @Column(length = 14, unique = true)

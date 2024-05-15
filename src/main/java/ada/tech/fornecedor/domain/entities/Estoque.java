@@ -22,8 +22,8 @@ public class Estoque {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany(mappedBy = "estoquesFornecedores")
-    private List<Produto> produtos;
+    @ManyToMany(mappedBy = "estoques")
+    private List<Produto> produtos = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "id_fornecedor")

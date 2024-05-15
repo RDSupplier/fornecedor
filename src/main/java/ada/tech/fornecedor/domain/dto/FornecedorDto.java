@@ -1,5 +1,6 @@
 package ada.tech.fornecedor.domain.dto;
 
+import ada.tech.fornecedor.domain.entities.Estoque;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;

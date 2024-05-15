@@ -23,7 +23,7 @@ public class ProdutoDto {
     @NotNull
     private int id;
 
-    @JsonProperty("fabricantes")
+    @JsonProperty("fabricante")
     private FabricanteDto fabricante;
 
     @JsonProperty("categorias")

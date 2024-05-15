@@ -5,6 +5,9 @@ import ada.tech.fornecedor.domain.dto.ProdutoDto;
 import ada.tech.fornecedor.domain.entities.Fabricante;
 import ada.tech.fornecedor.domain.entities.Produto;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class ProdutoMapper {
 
     public static Produto toEntity(ProdutoDto dto){
@@ -45,5 +48,27 @@ public class ProdutoMapper {
                 .imagem(entity.getImagem())
                 .codigoBarras(entity.getCodigoBarras())
                 .build();
+    }
+
+    public static List<Produto> toEntityList(List<ProdutoDto> dtos) {
+        List<Produto> produtos = new ArrayList<>();
+
+        for(ProdutoDto dto : dtos) {
+            Produto produto = ProdutoMapper.toEntity(dto);
+            produtos.add(produto);
+        }
+
+        return produtos;
+    }
+
+    public static List<ProdutoDto> toDtoList(List<Produto> entities) {
+        List<ProdutoDto> produtos = new ArrayList<>();
+
+        for(Produto entity : entities) {
+            ProdutoDto produto = ProdutoMapper.toDto(entity);
+            produtos.add(produto);
+        }
+
+        return produtos;
     }
 }

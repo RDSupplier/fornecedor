@@ -29,16 +29,16 @@ public class Produto {
             joinColumns = @JoinColumn(name = "id_produto"),
             inverseJoinColumns = @JoinColumn(name = "id_estoque")
     )
-    private List<Estoque> estoquesFornecedores;
+    private List<Estoque> estoques = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_fabricante")
     private Fabricante fabricante;
 
     @OneToMany(mappedBy = "produtos")
     private List<PedidoProduto> pedidoProduto = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "produtos")
+    @ManyToMany(mappedBy = "produtos", cascade = CascadeType.PERSIST)
     private List<Categoria> categorias = new ArrayList<>();
 
     @Size(max = 50, message = "O nome comercial do produto não pode exceder 50 caracteres")
