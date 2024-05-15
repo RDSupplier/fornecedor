@@ -26,7 +26,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         registry.addMapping("/fornecedor/produto").allowedOrigins("*");
         registry.addMapping("/produto").allowedOrigins("*");
         registry.addMapping("/loja").allowedOrigins("*");
-
     }
 
     @Bean

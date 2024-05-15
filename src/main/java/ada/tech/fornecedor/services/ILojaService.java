@@ -14,5 +14,4 @@ public interface ILojaService {
 
     void deletarLoja(int id) throws NotFoundException;
 
-
 }

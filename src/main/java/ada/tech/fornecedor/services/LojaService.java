@@ -42,7 +42,7 @@ public class LojaService implements ILojaService{
 
     @Override
     public LojaDto listarLoja(int id) throws NotFoundException {
-        return LojaMapper.toDto(searchAlbumById(id));
+        return LojaMapper.toDto(findLojaById(id));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class LojaService implements ILojaService{
         repository.deleteById(id);
     }
 
-    private Loja searchAlbumById(int id) throws NotFoundException {
+    private Loja findLojaById(int id) throws NotFoundException {
         return repository.findById(id).orElseThrow(() -> new NotFoundException(Loja.class, String.valueOf(id)));
     }
 }
