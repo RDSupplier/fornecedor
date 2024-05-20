@@ -1,5 +1,4 @@
 package ada.tech.fornecedor.controllers;
-
 import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.services.IFornecedorService;
@@ -24,7 +23,12 @@ public class FornecedorController {
     public ResponseEntity<FornecedorDto> criarFornecedor(
             @RequestBody FornecedorDto fornecedorDto
     ){
-        return ResponseEntity.status(HttpStatus.CREATED).body(fornecedorService.criarFornecedor(fornecedorDto));
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(fornecedorService.criarFornecedor(fornecedorDto));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+        //return ResponseEntity.status(HttpStatus.CREATED).body(fornecedorService.criarFornecedor(fornecedorDto));
     }
 
     @GetMapping

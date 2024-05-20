@@ -10,6 +10,7 @@ public class PedidoMapper {
                 .data(dto.getData())
                 .horario(dto.getHorario())
                 .total(dto.getTotal())
+                .id(dto.getId())
                 .build();
     }
 
