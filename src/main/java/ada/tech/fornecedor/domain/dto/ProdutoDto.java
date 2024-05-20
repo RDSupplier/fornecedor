@@ -19,10 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties
 public class ProdutoDto {
-    @Positive
-    @NotNull
-    private int id;
-
     @JsonProperty("fabricante")
     private FabricanteDto fabricante;
 

@@ -28,7 +28,7 @@ public class Categoria {
             joinColumns = @JoinColumn(name = "id_categoria"),
             inverseJoinColumns = @JoinColumn(name = "id_produto")
     )
-    private List<Produto> produtos;
+    private List<Produto> produtos = new ArrayList<>();
 
     @Size(max = 50, message = "O nome da categoria do produto não pode exceder 50 caracteres")
     @Column(length = 50)

@@ -13,10 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties
 public class FabricanteDto {
-    @Positive
-    @NotNull
-    private int id;
-
     @NotBlank
     @NotEmpty
     @Size(max = 50, message = "O nome do fabricante não pode exceder 50 caracteres")

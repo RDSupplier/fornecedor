@@ -18,13 +18,10 @@ import java.util.List;
 @Table(name="tb_fabricante")
 
 public class Fabricante {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
     @OneToMany(mappedBy = "fabricante")
     private List<Produto> produtos = new ArrayList<>();
 
+    @Id
     @Size(max = 14, message = "O CNPJ do fabricante não pode exceder 14 caracteres")
     @Column(length = 14, unique = true)
     private long cnpj;

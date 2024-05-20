@@ -5,16 +5,22 @@ import ada.tech.fornecedor.domain.entities.Fabricante;
 
 public class FabricanteMapper {
     public static Fabricante toEntity(FabricanteDto dto) {
+        if(dto == null) {
+            return null;
+        }
+
         return Fabricante.builder()
-                .id(dto.getId())
                 .nome(dto.getNome())
                 .cnpj(dto.getCnpj())
                 .build();
     }
 
     public static FabricanteDto toDto(Fabricante entity) {
+        if(entity == null) {
+            return null;
+        }
+
         return FabricanteDto.builder()
-                .id(entity.getId())
                 .nome(entity.getNome())
                 .cnpj(entity.getCnpj())
                 .build();

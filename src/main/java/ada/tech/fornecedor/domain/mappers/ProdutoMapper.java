@@ -6,11 +6,14 @@ import ada.tech.fornecedor.domain.entities.Fabricante;
 import ada.tech.fornecedor.domain.entities.Produto;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ProdutoMapper {
 
     public static Produto toEntity(ProdutoDto dto){
+        if(dto == null) {
+            return null;
+        }
+
         Fabricante fabricante = FabricanteMapper.toEntity(dto.getFabricante());
 
         return Produto.builder()
@@ -24,13 +27,16 @@ public class ProdutoMapper {
                 .preco(dto.getPreco())
                 .cargaPerigosa(dto.isCargaPerigosa())
                 .volume(dto.getVolume())
-                .id(dto.getId())
                 .imagem(dto.getImagem())
                 .codigoBarras(dto.getCodigoBarras())
                 .build();
     }
 
     public static ProdutoDto toDto(Produto entity) {
+        if(entity == null) {
+            return null;
+        }
+
         FabricanteDto fabricante = FabricanteMapper.toDto(entity.getFabricante());
 
         return ProdutoDto.builder()
@@ -44,13 +50,16 @@ public class ProdutoMapper {
                 .preco(entity.getPreco())
                 .cargaPerigosa(entity.isCargaPerigosa())
                 .volume(entity.getVolume())
-                .id(entity.getId())
                 .imagem(entity.getImagem())
                 .codigoBarras(entity.getCodigoBarras())
                 .build();
     }
 
     public static List<Produto> toEntityList(List<ProdutoDto> dtos) {
+        if(dtos == null) {
+            return null;
+        }
+
         List<Produto> produtos = new ArrayList<>();
 
         for(ProdutoDto dto : dtos) {
@@ -62,6 +71,10 @@ public class ProdutoMapper {
     }
 
     public static List<ProdutoDto> toDtoList(List<Produto> entities) {
+        if(entities == null) {
+            return null;
+        }
+
         List<ProdutoDto> produtos = new ArrayList<>();
 
         for(Produto entity : entities) {

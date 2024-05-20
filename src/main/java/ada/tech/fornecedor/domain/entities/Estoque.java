@@ -1,7 +1,6 @@
 package ada.tech.fornecedor.domain.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,13 +22,9 @@ public class Estoque {
     private int id;
 
     @ManyToMany(mappedBy = "estoques")
-    private List<Produto> produtos = new ArrayList<>();
+    private List<ProdutoEstoque> produtoEstoques = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "id_fornecedor")
     private Fornecedor fornecedor;
-
-    @Size(max = 20, message = "A quantidade de produtos do estoque não pode exceder 20 caracteres")
-    @Column(length = 20)
-    private int quantidade;
 }

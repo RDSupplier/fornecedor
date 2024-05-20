@@ -8,6 +8,10 @@ import ada.tech.fornecedor.domain.entities.Fornecedor;
 public class FornecedorMapper {
 
     public static Fornecedor toEntity(FornecedorDto dto){
+        if(dto == null) {
+            return null;
+        }
+
         Endereco endereco = EnderecoMapper.toEntity(dto.getEndereco());
 
         return Fornecedor.builder()
@@ -20,6 +24,10 @@ public class FornecedorMapper {
     }
 
     public static FornecedorDto toDto(Fornecedor entity) {
+        if(entity == null) {
+            return null;
+        }
+
         EnderecoDto enderecoDto = EnderecoMapper.toDto(entity.getEnderecos());
 
         return FornecedorDto.builder()

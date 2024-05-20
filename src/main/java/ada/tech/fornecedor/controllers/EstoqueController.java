@@ -1,7 +1,9 @@
 package ada.tech.fornecedor.controllers;
 
 import ada.tech.fornecedor.domain.dto.EstoqueDto;
+import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
+import ada.tech.fornecedor.domain.entities.ProdutoEstoque;
 import ada.tech.fornecedor.services.IEstoqueService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -30,6 +32,7 @@ public class EstoqueController {
     ) {
         try {
             EstoqueDto estoque = estoqueService.criarEstoque(estoqueDto);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(estoque);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o estoque: violação de integridade de dados");
@@ -58,9 +61,11 @@ public class EstoqueController {
             @RequestBody EstoqueDto estoqueDto
     ) throws NotFoundException {
         final EstoqueDto estoque = estoqueService.atualizarEstoque(id, estoqueDto);
+
         if(estoque == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
         return ResponseEntity.ok(estoque);
     }
 
@@ -69,6 +74,56 @@ public class EstoqueController {
             @PathVariable int id
     ) throws NotFoundException {
         estoqueService.deletarEstoque(id);
+
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/produto")
+    public ResponseEntity<?> adicionarProduto(
+            @Valid
+            @PathVariable int id,
+            @RequestBody ProdutoEstoque produtoEstoque
+//            @RequestBody ProdutoDto produtoDto,
+//            @RequestBody int produtoId,
+//            @RequestBody int quantidade
+    ) throws NotFoundException {
+        try {
+            final EstoqueDto estoque = estoqueService.adicionarProduto(id, produtoEstoque);
+
+            if(estoque == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            return ResponseEntity.ok(estoque);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao adicionar produto ao estoque: violação de integridade de dados");
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao adicionar produto ao estoque: violação de restrição de dados");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
+        }
+    }
+
+    @PatchMapping("/{id}/fornecedor")
+    public ResponseEntity<?> adicionarFornecedor(
+            @Valid
+            @PathVariable int id,
+            @RequestBody FornecedorDto fornecedorDto
+    ) {
+        try {
+            final EstoqueDto estoque = estoqueService.adicionarFornecedor(id, fornecedorDto);
+
+            if(estoque == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            return ResponseEntity.ok(estoque);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao adicionar produto ao estoque: violação de integridade de dados");
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao adicionar produto ao estoque: violação de restrição de dados");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
+        }
     }
 }

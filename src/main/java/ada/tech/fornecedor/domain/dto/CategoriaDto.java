@@ -13,10 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties
 public class CategoriaDto {
-    @Positive
-    @NotNull
-    private int id;
-
     @NotEmpty
     @NotBlank
     @Size(max = 50, message = "A categoria não pode exceder 50 caracteres")

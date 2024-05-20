@@ -23,13 +23,8 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany
-    @JoinTable(
-            name = "produto_estoque",
-            joinColumns = @JoinColumn(name = "id_produto"),
-            inverseJoinColumns = @JoinColumn(name = "id_estoque")
-    )
-    private List<Estoque> estoques = new ArrayList<>();
+    @ManyToMany(mappedBy = "produtos")
+    private List<ProdutoEstoque> produtoEstoques = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_fabricante")
