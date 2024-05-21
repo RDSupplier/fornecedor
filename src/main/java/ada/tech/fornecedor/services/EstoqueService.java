@@ -7,6 +7,7 @@ import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.*;
 import ada.tech.fornecedor.repositories.IEstoqueRepository;
 import ada.tech.fornecedor.repositories.IFornecedorRepository;
+import ada.tech.fornecedor.repositories.IProdutoEstoqueRepository;
 import ada.tech.fornecedor.repositories.IProdutoRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -24,6 +25,8 @@ public class EstoqueService implements IEstoqueService {
     private final IEstoqueRepository repository;
     private final IFornecedorRepository fornecedorRepository;
     private final IProdutoRepository produtoRepository;
+    private final IProdutoEstoqueRepository produtoEstoqueRepository;
+
     private final EntityManager entityManager;
 
     private final ProdutoService produtoService;
@@ -84,6 +87,8 @@ public class EstoqueService implements IEstoqueService {
         produtoEstoque.setProdutos(produto);
         produtoEstoque.setEstoques(estoque);
         produtoEstoque.setQuantidade(produtoEstoqueRequest.getQuantidade());
+
+        produtoEstoque = produtoEstoqueRepository.save(produtoEstoque);
 
         estoque.getProdutoEstoques().add(produtoEstoque);
         estoque = repository.save(estoque);

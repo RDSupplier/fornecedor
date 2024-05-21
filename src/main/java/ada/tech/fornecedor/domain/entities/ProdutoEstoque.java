@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="pedido_produto")
+@Table(name="produto_estoque")
 public class ProdutoEstoque {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
