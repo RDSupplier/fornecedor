@@ -28,7 +28,8 @@ public class Pedido {
     @JoinColumn(name = "id_loja")
     private Loja loja;
 
-    @OneToMany(mappedBy = "pedidos")
+
+    @OneToMany(mappedBy = "pedidos", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<PedidoProduto> pedidoProduto = new ArrayList<>();
 
     private LocalDate data;

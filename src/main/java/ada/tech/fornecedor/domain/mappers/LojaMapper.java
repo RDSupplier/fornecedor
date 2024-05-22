@@ -6,6 +6,7 @@ import ada.tech.fornecedor.domain.entities.Loja;
 public class LojaMapper {
 
     public static Loja toEntity(LojaDto dto){
+
         return Loja.builder()
                 .registroAnvisa(dto.getRegistroAnvisa())
                 .cnpj(dto.getCnpj())
@@ -15,6 +16,7 @@ public class LojaMapper {
                 .crf(dto.getCrf())
                 .senha(dto.getSenha())
                 .data_atualizacao(dto.getData_atualizacao())
+                .id(dto.getId())
                 .build();
     }
 

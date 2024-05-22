@@ -20,6 +20,10 @@ public class PedidoProduto {
     private int id;
 
     @ManyToOne
+    @JoinColumn(name = "id_estoque")
+    private Estoque estoque;
+
+    @ManyToOne
     @JoinColumn(name = "id_pedido")
     private Pedido pedidos;
 

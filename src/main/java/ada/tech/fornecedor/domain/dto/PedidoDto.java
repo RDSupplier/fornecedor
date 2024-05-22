@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,6 +26,10 @@ public class PedidoDto {
 
     private LocalTime horario;
 
+    private List<LojaDto> lojas;
+
+    private List<EstoqueDto> estoque;
+
     @Positive
     @NotNull
     private double total;
@@ -32,4 +37,6 @@ public class PedidoDto {
     @Positive
     @NotNull
     private double volumeTotal;
+
+    private List<PedidoProdutoDto> produtos;
 }

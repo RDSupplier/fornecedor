@@ -1,10 +1,16 @@
 package ada.tech.fornecedor.services;
 
+import ada.tech.fornecedor.domain.dto.EstoqueDto;
+import ada.tech.fornecedor.domain.dto.LojaDto;
 import ada.tech.fornecedor.domain.dto.PedidoDto;
+import ada.tech.fornecedor.domain.dto.PedidoProdutoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
-import ada.tech.fornecedor.domain.entities.Pedido;
+import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
+import ada.tech.fornecedor.repositories.IEstoqueRepository;
+import ada.tech.fornecedor.repositories.ILojaRepository;
 import ada.tech.fornecedor.repositories.IPedidoRepository;
+import ada.tech.fornecedor.repositories.IProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +22,9 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -24,11 +33,77 @@ import java.util.Scanner;
 public class PedidoService implements IPedidoService {
 
     private final IPedidoRepository repository;
+    private final IProdutoRepository produtoRepository;
+    private final ILojaRepository lojaRepository;
+
+    private final IEstoqueRepository estoqueRepository;
 
     @Override
     public PedidoDto criarPedido(PedidoDto pedidoDto) {
-        Pedido pedido = PedidoMapper.toEntity(pedidoDto);
-        return PedidoMapper.toDto(repository.save(pedido));
+        Pedido pedido = new Pedido();
+
+        pedido.setData(LocalDate.now());
+        pedido.setHorario(LocalTime.now());
+        double totalPedido = 0.0;
+        double volumeTotalProduto = 0.0;
+
+        for (LojaDto lojaDto : pedidoDto.getLojas()) {
+            Loja loja = lojaRepository.findById(lojaDto.getId())
+                    .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
+
+            pedido.setLoja(loja);
+        }
+
+        PedidoProduto pedidoProduto = new PedidoProduto();
+
+        for (EstoqueDto estoqueDto : pedidoDto.getEstoque()) {
+            Estoque estoque = estoqueRepository.findById(estoqueDto.getId())
+                    .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
+
+            pedidoProduto.setEstoque(estoque);
+        }
+
+        List<PedidoProduto> pedidotest = new ArrayList<>();
+
+        for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
+            Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+
+            if (pedidoProdutoDto.getQuantidade() <= 0) {
+                throw new IllegalArgumentException("A quantidade do produto deve ser maior que zero");
+            }
+
+
+            volumeTotalProduto = produto.getVolume() * pedidoProdutoDto.getQuantidade();
+
+
+            double precoTotalProduto = produto.getPreco() * pedidoProdutoDto.getQuantidade();
+
+
+            totalPedido += precoTotalProduto;
+
+
+
+            pedidoProduto.setPedidos(pedido);
+            pedidoProduto.setProdutos(produto);
+            pedidoProduto.setQuantidade(pedidoProdutoDto.getQuantidade());
+            pedidoProduto.setVolumeTotal(volumeTotalProduto);
+
+            pedido.getPedidoProduto().add(pedidoProduto);
+
+            //pedidotest.add(pedidoProduto);
+
+        }
+
+
+        pedido.setTotal(totalPedido);
+        pedido.setVolumeTotal(volumeTotalProduto);
+
+
+        pedido = repository.save(pedido);
+
+        return PedidoMapper.toDto(pedido);
     }
 
     @Override
