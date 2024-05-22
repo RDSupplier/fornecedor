@@ -58,6 +58,7 @@ public class SecurityConfig {
 
                         //admin
                         .requestMatchers(HttpMethod.POST, "/fornecedor").hasRole("ADMIN") // cadastra fornecedores
+                        .requestMatchers(HttpMethod.POST, "/fornecedor/**").hasRole("ADMIN") // consultar distancia entre loja e fornecedor
                         .requestMatchers(HttpMethod.PUT, "/fornecedor/**").hasRole("ADMIN") // atualiza dados do fornecedor
                         .requestMatchers(HttpMethod.GET, "/fornecedor/**").hasRole("ADMIN") // visualiza fornecedores
                         .requestMatchers(HttpMethod.DELETE, "/fornecedor/loja/**").hasRole("ADMIN") // deleta lojas

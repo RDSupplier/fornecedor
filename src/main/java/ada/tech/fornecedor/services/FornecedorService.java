@@ -1,6 +1,8 @@
 package ada.tech.fornecedor.services;
 
+import ada.tech.fornecedor.controllers.EstoqueController;
 import ada.tech.fornecedor.domain.dto.EnderecoDto;
+import ada.tech.fornecedor.domain.dto.EstoqueDto;
 import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.domain.entities.Endereco;
@@ -11,6 +13,8 @@ import ada.tech.fornecedor.repositories.IEnderecoRepository;
 import ada.tech.fornecedor.repositories.IFornecedorRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +27,6 @@ public class FornecedorService implements IFornecedorService {
 
     private final IFornecedorRepository repository;
     private final IEnderecoRepository enderecoRepository;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional
