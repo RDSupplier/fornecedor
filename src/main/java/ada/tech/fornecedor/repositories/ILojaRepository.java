@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ILojaRepository extends JpaRepository<Loja, Integer> {
+    Loja findByCnpj(long cnpj);
 }
