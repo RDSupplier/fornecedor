@@ -12,6 +12,7 @@ import ada.tech.fornecedor.repositories.IProdutoRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,9 +28,6 @@ public class EstoqueService implements IEstoqueService {
     private final IProdutoRepository produtoRepository;
     private final IProdutoEstoqueRepository produtoEstoqueRepository;
 
-    private final EntityManager entityManager;
-
-    private final ProdutoService produtoService;
     private final FornecedorService fornecedorService;
 
     @Override
@@ -70,12 +68,12 @@ public class EstoqueService implements IEstoqueService {
         Estoque estoque = searchEstoqueById(estoqueId);
 
         if (produtoEstoqueRequest == null) {
-            throw new IllegalArgumentException("O objeto produtoEstoqueRequest não pode ser nulo");
+            throw new IllegalArgumentException("O produtoEstoqueRequest não pode ser nulo");
         }
 
         Produto produto = produtoEstoqueRequest.getProdutos();
         if (produto == null) {
-            throw new IllegalArgumentException("O objeto Produto dentro de produtoEstoqueRequest não pode ser nulo");
+            throw new IllegalArgumentException("O Produto dentro de produtoEstoqueRequest não pode ser nulo");
         }
 
         Optional<Produto> produtoExistente = produtoRepository.findById(produto.getId());

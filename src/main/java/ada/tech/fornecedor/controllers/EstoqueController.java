@@ -56,17 +56,25 @@ public class EstoqueController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<EstoqueDto> atualizarEstoque(
+    public ResponseEntity<?> atualizarEstoque(
             @PathVariable int id,
             @RequestBody EstoqueDto estoqueDto
     ) throws NotFoundException {
-        final EstoqueDto estoque = estoqueService.atualizarEstoque(id, estoqueDto);
+        try {
+            final EstoqueDto estoque = estoqueService.atualizarEstoque(id, estoqueDto);
 
-        if(estoque == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            if (estoque == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            return ResponseEntity.ok(estoque);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o estoque: violação de integridade de dados");
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o estoque: violação de restrição de dados");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
         }
-
-        return ResponseEntity.ok(estoque);
     }
 
     @DeleteMapping("/{id}")
@@ -83,9 +91,6 @@ public class EstoqueController {
             @Valid
             @PathVariable int id,
             @RequestBody ProdutoEstoque produtoEstoque
-//            @RequestBody ProdutoDto produtoDto,
-//            @RequestBody int produtoId,
-//            @RequestBody int quantidade
     ) throws NotFoundException {
         try {
             final EstoqueDto estoque = estoqueService.adicionarProduto(id, produtoEstoque);
