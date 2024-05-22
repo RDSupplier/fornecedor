@@ -1,15 +1,20 @@
 package ada.tech.fornecedor.services;
 
+import ada.tech.fornecedor.domain.dto.LoginDto;
+import ada.tech.fornecedor.domain.dto.LoginResponse;
 import ada.tech.fornecedor.domain.dto.LojaDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.domain.entities.Endereco;
 import ada.tech.fornecedor.domain.entities.Loja;
+import ada.tech.fornecedor.domain.entities.Role;
 import ada.tech.fornecedor.domain.mappers.EnderecoMapper;
 import ada.tech.fornecedor.domain.mappers.LojaMapper;
 import ada.tech.fornecedor.repositories.ILojaRepository;
+import ada.tech.fornecedor.repositories.IRoleRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,15 +26,29 @@ public class LojaService implements ILojaService{
 
     private final ILojaRepository repository;
     private final EntityManager entityManager;
+    private final PasswordEncoder passwordEncoder;
+    private final IRoleRepository roleRepository;
+
+    private Role criarRoleSeNaoExistir(String roleName) {
+        Role role = roleRepository.findByName(roleName);
+        if (role == null) {
+            role = new Role();
+            role.setName(roleName);
+            role = roleRepository.save(role);
+        }
+        return role;
+    }
 
     @Override
     @Transactional
     public LojaDto criarLoja(LojaDto lojaDto) {
         Endereco endereco = EnderecoMapper.toEntity(lojaDto.getEndereco());
-
         entityManager.persist(endereco);
-
         Loja loja = LojaMapper.toEntity(lojaDto);
+        String senhaEncoded = passwordEncoder.encode(lojaDto.getSenha());
+        Role roleLoja = criarRoleSeNaoExistir("ROLE_LOJA");
+        loja.setRole(roleLoja);
+        loja.setSenha(senhaEncoded);
         loja.setEnderecos(endereco);
         loja = repository.save(loja);
         return LojaMapper.toDto(loja);
@@ -65,7 +84,27 @@ public class LojaService implements ILojaService{
         repository.deleteById(id);
     }
 
+    @Override
+    public LoginResponse loginLoja(LoginDto loginDto) {
+        long cnpj = loginDto.getCnpj();
+        String senha = loginDto.getSenha();
+
+        Loja loja = repository.findByCnpj(cnpj);
+
+        if (loja != null) {
+            String senhaEncoded = loja.getSenha();
+            if (passwordEncoder.matches(senha, senhaEncoded)) {
+                return new LoginResponse("Login bem-sucedido", true);
+            } else {
+                return new LoginResponse("Dados incorretos", false);
+            }
+        } else {
+            return new LoginResponse("Loja não encontrada", false);
+        }
+    }
+
     private Loja findLojaById(int id) throws NotFoundException {
         return repository.findById(id).orElseThrow(() -> new NotFoundException(Loja.class, String.valueOf(id)));
     }
+
 }

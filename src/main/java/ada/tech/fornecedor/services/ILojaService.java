@@ -1,5 +1,7 @@
 package ada.tech.fornecedor.services;
 
+import ada.tech.fornecedor.domain.dto.LoginDto;
+import ada.tech.fornecedor.domain.dto.LoginResponse;
 import ada.tech.fornecedor.domain.dto.LojaDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 
@@ -13,5 +15,7 @@ public interface ILojaService {
     LojaDto atualizarLoja(int id, LojaDto pedido) throws NotFoundException;
 
     void deletarLoja(int id) throws NotFoundException;
+
+    LoginResponse loginLoja(LoginDto loginDto);
 
 }

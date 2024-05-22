@@ -53,4 +53,8 @@ public class Loja {
 
     @Column(name = "data_atualizacao")
     private LocalDate data_atualizacao;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 }
