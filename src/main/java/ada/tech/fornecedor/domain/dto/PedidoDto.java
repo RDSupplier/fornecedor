@@ -26,9 +26,9 @@ public class PedidoDto {
 
     private LocalTime horario;
 
-    private List<LojaDto> lojas;
+    private int lojas;
 
-    private List<EstoqueDto> estoque;
+    private int estoque;
 
     @Positive
     @NotNull

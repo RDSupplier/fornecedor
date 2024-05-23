@@ -10,6 +10,7 @@ public class PedidoMapper {
                 .data(dto.getData())
                 .horario(dto.getHorario())
                 .total(dto.getTotal())
+                .volumeTotal(dto.getVolumeTotal())
                 .build();
     }
 
@@ -18,6 +19,7 @@ public class PedidoMapper {
                 .data(entity.getData())
                 .horario(entity.getHorario())
                 .total(entity.getTotal())
+                .volumeTotal(entity.getVolumeTotal())
                 .id(entity.getId())
                 .build();
     }

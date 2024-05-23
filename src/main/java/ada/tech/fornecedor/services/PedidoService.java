@@ -41,26 +41,22 @@ public class PedidoService implements IPedidoService {
     @Override
     public PedidoDto criarPedido(PedidoDto pedidoDto) {
         Pedido pedido = new Pedido();
-
+        List<PedidoProduto> pedidoProdutos = new ArrayList<>();
         pedido.setData(LocalDate.now());
         pedido.setHorario(LocalTime.now());
         double totalPedido = 0.0;
         double volumeTotalProduto = 0.0;
 
-        for (LojaDto lojaDto : pedidoDto.getLojas()) {
-            Loja loja = lojaRepository.findById(lojaDto.getId())
+
+        Loja loja = null;
+            loja = lojaRepository.findById(pedidoDto.getLojas())
                     .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
 
-            pedido.setLoja(loja);
-        }
-
-        List<PedidoProduto> pedidoProdutos = new ArrayList<>();
 
         Estoque estoque = null;
-        if (!pedidoDto.getEstoque().isEmpty()) {
-            estoque = estoqueRepository.findById(pedidoDto.getEstoque().get(0).getId())
+            estoque = estoqueRepository.findById(pedidoDto.getEstoque())
                     .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
-        }
+
 
         for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
             Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
@@ -88,6 +84,10 @@ public class PedidoService implements IPedidoService {
 
             if (estoque != null) {
                 pedidoProduto.setEstoque(estoque);
+            }
+
+            if (loja != null) {
+                pedido.setLoja(loja);
             }
 
             pedidoProdutos.add(pedidoProduto);
