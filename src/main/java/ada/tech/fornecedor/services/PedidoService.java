@@ -1,7 +1,4 @@
 package ada.tech.fornecedor.services;
-
-import ada.tech.fornecedor.domain.dto.EstoqueDto;
-import ada.tech.fornecedor.domain.dto.LojaDto;
 import ada.tech.fornecedor.domain.dto.PedidoDto;
 import ada.tech.fornecedor.domain.dto.PedidoProdutoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
@@ -48,12 +45,12 @@ public class PedidoService implements IPedidoService {
         double volumeTotalProduto = 0.0;
 
 
-        Loja loja = null;
+        Loja loja;
             loja = lojaRepository.findById(pedidoDto.getLojas())
                     .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
 
 
-        Estoque estoque = null;
+        Estoque estoque;
             estoque = estoqueRepository.findById(pedidoDto.getEstoque())
                     .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
 
