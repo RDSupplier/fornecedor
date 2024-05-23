@@ -54,16 +54,13 @@ public class PedidoService implements IPedidoService {
             pedido.setLoja(loja);
         }
 
-        PedidoProduto pedidoProduto = new PedidoProduto();
+        List<PedidoProduto> pedidoProdutos = new ArrayList<>();
 
-        for (EstoqueDto estoqueDto : pedidoDto.getEstoque()) {
-            Estoque estoque = estoqueRepository.findById(estoqueDto.getId())
+        Estoque estoque = null;
+        if (!pedidoDto.getEstoque().isEmpty()) {
+            estoque = estoqueRepository.findById(pedidoDto.getEstoque().get(0).getId())
                     .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
-
-            pedidoProduto.setEstoque(estoque);
         }
-
-        List<PedidoProduto> pedidotest = new ArrayList<>();
 
         for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
             Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
@@ -83,27 +80,32 @@ public class PedidoService implements IPedidoService {
 
             totalPedido += precoTotalProduto;
 
-
-
+            PedidoProduto pedidoProduto = new PedidoProduto();
             pedidoProduto.setPedidos(pedido);
             pedidoProduto.setProdutos(produto);
             pedidoProduto.setQuantidade(pedidoProdutoDto.getQuantidade());
             pedidoProduto.setVolumeTotal(volumeTotalProduto);
 
-            pedido.getPedidoProduto().add(pedidoProduto);
+            if (estoque != null) {
+                pedidoProduto.setEstoque(estoque);
+            }
 
-            //pedidotest.add(pedidoProduto);
-
+            pedidoProdutos.add(pedidoProduto);
         }
-
 
         pedido.setTotal(totalPedido);
         pedido.setVolumeTotal(volumeTotalProduto);
 
+        Pedido pedidoSalvo = repository.save(pedido);
 
-        pedido = repository.save(pedido);
+        for (PedidoProduto pedidoProduto : pedidoProdutos) {
+            pedidoProduto.setPedidos(pedidoSalvo);
+        }
 
-        return PedidoMapper.toDto(pedido);
+        pedidoSalvo.getPedidoProduto().addAll(pedidoProdutos);
+        pedidoSalvo = repository.save(pedidoSalvo);
+
+        return PedidoMapper.toDto(pedidoSalvo);
     }
 
     @Override
