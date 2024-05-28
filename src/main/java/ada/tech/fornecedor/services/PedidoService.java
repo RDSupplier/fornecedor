@@ -5,7 +5,6 @@ import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
 import ada.tech.fornecedor.repositories.IEstoqueRepository;
-import ada.tech.fornecedor.repositories.ILojaRepository;
 import ada.tech.fornecedor.repositories.IPedidoRepository;
 import ada.tech.fornecedor.repositories.IProdutoRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class PedidoService implements IPedidoService {
 
     private final IPedidoRepository repository;
     private final IProdutoRepository produtoRepository;
-    private final ILojaRepository lojaRepository;
+
 
     private final IEstoqueRepository estoqueRepository;
 
@@ -45,9 +44,6 @@ public class PedidoService implements IPedidoService {
         double volumeTotalProduto = 0.0;
 
 
-        Loja loja;
-            loja = lojaRepository.findById(pedidoDto.getLojas())
-                    .orElseThrow(() -> new RuntimeException("Loja não encontrada"));
 
 
         Estoque estoque;
@@ -83,9 +79,6 @@ public class PedidoService implements IPedidoService {
                 pedidoProduto.setEstoque(estoque);
             }
 
-            if (loja != null) {
-                pedido.setLoja(loja);
-            }
 
             pedidoProdutos.add(pedidoProduto);
         }
@@ -137,7 +130,7 @@ public class PedidoService implements IPedidoService {
         String chaveAPI = "fMFAIoNBzUAo1ioZKju6uzSbG4vdUYkLXMjEY2CYPl4noRGb6HZgnOO0mgCofVhG";
 
         final Pedido pedido = repository.findById(id).orElseThrow(() -> new NotFoundException(Pedido.class, String.valueOf(id)));
-        int cepLoja = pedido.getLoja().getEnderecos().getCep();
+
         int cepFornecedor = pedido.getPedidoProduto()
                 .get(0)
                 .getProdutos()
@@ -151,7 +144,7 @@ public class PedidoService implements IPedidoService {
 
         try {
             URL api = new URL("https://api.distancematrix.ai/maps/api/distancematrix/json?origins=" + cepFornecedor +
-                    "&destinations=" + cepLoja +
+                    "&destinations=" + "11320180" +
                     "&key=" + chaveAPI);
 
             conexao = (HttpURLConnection) api.openConnection();
