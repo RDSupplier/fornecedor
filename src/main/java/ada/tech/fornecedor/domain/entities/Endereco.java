@@ -23,9 +23,6 @@ public class Endereco {
     private int id;
 
     @OneToMany(mappedBy = "enderecos")
-    private List<Loja> lojas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "enderecos")
     private List<Fornecedor> fornecedores = new ArrayList<>();
 
     @Size(max = 50, message = "O nome da rua não pode exceder 50 caracteres")
