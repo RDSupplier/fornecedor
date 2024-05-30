@@ -17,6 +17,7 @@ public class ProdutoMapper {
         Fabricante fabricante = FabricanteMapper.toEntity(dto.getFabricante());
 
         return Produto.builder()
+                .id(dto.getId())
                 .nomeComercial(dto.getNomeComercial())
                 .principioAtivo(dto.getPrincipioAtivo())
                 .apresentacao(dto.getApresentacao())
@@ -40,6 +41,7 @@ public class ProdutoMapper {
         FabricanteDto fabricante = FabricanteMapper.toDto(entity.getFabricante());
 
         return ProdutoDto.builder()
+                .id(entity.getId())
                 .nomeComercial(entity.getNomeComercial())
                 .principioAtivo(entity.getPrincipioAtivo())
                 .apresentacao(entity.getApresentacao())

@@ -3,7 +3,7 @@ package ada.tech.fornecedor.controllers;
 import ada.tech.fornecedor.domain.dto.EstoqueDto;
 import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
-import ada.tech.fornecedor.domain.entities.ProdutoEstoque;
+import ada.tech.fornecedor.domain.entities.Produto;
 import ada.tech.fornecedor.services.IEstoqueService;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -90,10 +90,10 @@ public class EstoqueController {
     public ResponseEntity<?> adicionarProduto(
             @Valid
             @PathVariable int id,
-            @RequestBody ProdutoEstoque produtoEstoque
+            @RequestBody int produtoId
     ) throws NotFoundException {
         try {
-            final EstoqueDto estoque = estoqueService.adicionarProduto(id, produtoEstoque);
+            final EstoqueDto estoque = estoqueService.adicionarProduto(id, produtoId);
 
             if(estoque == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -113,10 +113,10 @@ public class EstoqueController {
     public ResponseEntity<?> adicionarFornecedor(
             @Valid
             @PathVariable int id,
-            @RequestBody FornecedorDto fornecedorDto
+            @RequestBody int fornecedorId
     ) {
         try {
-            final EstoqueDto estoque = estoqueService.adicionarFornecedor(id, fornecedorDto);
+            final EstoqueDto estoque = estoqueService.adicionarFornecedor(id, fornecedorId);
 
             if(estoque == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

@@ -8,21 +8,21 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="tb_estoque_fornecedor")
-
+@Table(name="tb_estoque")
 public class Estoque {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToMany(mappedBy = "estoques")
-    private List<ProdutoEstoque> produtoEstoques = new ArrayList<>();
+    private List<Produto> produtos;
 
     @ManyToOne
     @JoinColumn(name = "id_fornecedor")

@@ -134,9 +134,8 @@ public class PedidoService implements IPedidoService {
         int cepFornecedor = pedido.getPedidoProduto()
                 .get(0)
                 .getProdutos()
-                .getProdutoEstoques()
-                .get(0)
-                .getEstoques().getFornecedor()
+                .getEstoques().get(0)
+                .getFornecedor()
                 .getEnderecos()
                 .getCep();
 

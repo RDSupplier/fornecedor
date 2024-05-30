@@ -35,7 +35,7 @@ public class FornecedorController {
 
             EstoqueDto estoqueDto = new EstoqueDto();
             estoqueController.criarEstoque(estoqueDto);
-            estoqueController.adicionarFornecedor(fornecedor.getId(), fornecedor);
+            estoqueController.adicionarFornecedor(fornecedor.getId(), fornecedor.getId());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(fornecedor);
         } catch (DataIntegrityViolationException e) {

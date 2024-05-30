@@ -12,6 +12,7 @@ import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -29,5 +30,5 @@ public class EstoqueDto {
 
     @JsonProperty("produtos")
     @Nullable
-    private List<ProdutoEstoqueDto> produtos = new ArrayList<>();
+    private List<ProdutoDto> produtos;
 }

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Builder
 @Data
@@ -17,14 +18,18 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name="tb_produto")
-
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany(mappedBy = "produtos")
-    private List<ProdutoEstoque> produtoEstoques = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "produto_estoque",
+            joinColumns = @JoinColumn(name = "id_produto"),
+            inverseJoinColumns = @JoinColumn(name = "id_estoque")
+    )
+    private List<Estoque> estoques;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_fabricante")

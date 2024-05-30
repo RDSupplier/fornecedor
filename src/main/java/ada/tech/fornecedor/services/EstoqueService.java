@@ -7,15 +7,11 @@ import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.*;
 import ada.tech.fornecedor.repositories.IEstoqueRepository;
 import ada.tech.fornecedor.repositories.IFornecedorRepository;
-import ada.tech.fornecedor.repositories.IProdutoEstoqueRepository;
 import ada.tech.fornecedor.repositories.IProdutoRepository;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +22,6 @@ public class EstoqueService implements IEstoqueService {
     private final IEstoqueRepository repository;
     private final IFornecedorRepository fornecedorRepository;
     private final IProdutoRepository produtoRepository;
-    private final IProdutoEstoqueRepository produtoEstoqueRepository;
 
     private final FornecedorService fornecedorService;
 
@@ -64,49 +59,46 @@ public class EstoqueService implements IEstoqueService {
 
     @Override
     @Transactional
-    public EstoqueDto adicionarProduto(int estoqueId, ProdutoEstoque produtoEstoqueRequest) throws NotFoundException {
+    public EstoqueDto adicionarProduto(int estoqueId, int produtoId) throws NotFoundException {
         Estoque estoque = searchEstoqueById(estoqueId);
 
-        if (produtoEstoqueRequest == null) {
-            throw new IllegalArgumentException("O produtoEstoqueRequest não pode ser nulo");
+        if (produtoId <= 0) {
+            throw new IllegalArgumentException("O id do produto não pode ser <= 0>");
         }
 
-        Produto produto = produtoEstoqueRequest.getProdutos();
-        if (produto == null) {
-            throw new IllegalArgumentException("O Produto dentro de produtoEstoqueRequest não pode ser nulo");
-        }
-
-        Optional<Produto> produtoExistente = produtoRepository.findById(produto.getId());
+        Optional<Produto> produtoExistente = produtoRepository.findById(produtoId);
         if (!produtoExistente.isPresent()) {
-            throw new NotFoundException(Produto.class, "ID: " + produto.getId());
+            throw new NotFoundException(Produto.class, "ID: " + produtoId);
         }
 
-        ProdutoEstoque produtoEstoque = new ProdutoEstoque();
-        produtoEstoque.setProdutos(produto);
-        produtoEstoque.setEstoques(estoque);
-        produtoEstoque.setQuantidade(produtoEstoqueRequest.getQuantidade());
+        Produto produto = produtoExistente.get();
 
-        produtoEstoque = produtoEstoqueRepository.save(produtoEstoque);
+        if(estoque.getProdutos().contains(produto)) {
+            throw new IllegalArgumentException("O produto já está associado a este estoque");
+        }
 
-        estoque.getProdutoEstoques().add(produtoEstoque);
+        estoque.getProdutos().add(produto);
         estoque = repository.save(estoque);
+
+        produto.getEstoques().add(estoque);
+        produtoRepository.save(produto);
 
         return EstoqueMapper.toDto(estoque);
     }
 
     @Override
     @Transactional
-    public EstoqueDto adicionarFornecedor(int estoqueId, FornecedorDto fornecedorDto) throws NotFoundException {
+    public EstoqueDto adicionarFornecedor(int estoqueId, int fornecedorId) throws NotFoundException {
         Estoque estoque = searchEstoqueById(estoqueId);
 
-        Optional<Fornecedor> fornecedorExistente = fornecedorRepository.findById(fornecedorDto.getId());
+        Optional<Fornecedor> fornecedorExistente = fornecedorRepository.findById(fornecedorId);
 
         Fornecedor fornecedor;
-        if (fornecedorExistente.isPresent()) {
-            fornecedor = fornecedorExistente.get();
-        } else {
-            fornecedor = FornecedorMapper.toEntity(fornecedorService.criarFornecedor(fornecedorDto));
+        if (!fornecedorExistente.isPresent()) {
+            throw new NotFoundException(Fornecedor.class, "ID: " + fornecedorId);
         }
+
+        fornecedor = fornecedorExistente.get();
 
         if (estoque.getFornecedor() == null) {
             estoque.setFornecedor(fornecedor);
