@@ -34,7 +34,7 @@ public class ProdutoService implements IProdutoService{
 
     @Override
     @Transactional
-    public ProdutoDto criarProduto(ProdutoDto produtoDto) {
+    public ProdutoDto criarProduto(ProdutoDto produtoDto) throws NotFoundException {
         Fabricante fabricante = FabricanteMapper.toEntity(produtoDto.getFabricante());
         Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
 
@@ -48,39 +48,12 @@ public class ProdutoService implements IProdutoService{
         Produto produto = ProdutoMapper.toEntity(produtoDto);
         produto.setFabricante(fabricanteExistente);
 
-        List<String> categoriaNomes = produtoDto.getCategorias().stream()
-                .map(CategoriaDto::getCategoria)
-                .collect(Collectors.toList());
+        adicionarCategorias(produto, produtoDto.getCategorias());
 
-        List<Categoria> categoriasExistentes = categoriaRepository.findAllByCategoriaIn(categoriaNomes);
-
-        Map<String, Categoria> categoriaExistenteMap = categoriasExistentes.stream()
-                .collect(Collectors.toMap(Categoria::getCategoria, Function.identity()));
-
-        List<Categoria> categoriasFinal = new ArrayList<>();
-
-        for (String categoriaNome : categoriaNomes) {
-            if (categoriaExistenteMap.containsKey(categoriaNome)) {
-                Categoria categoriaExistente = categoriaExistenteMap.get(categoriaNome);
-                categoriaExistente.getProdutos().add(produto);
-                categoriasFinal.add(categoriaExistente);
-            } else {
-                Categoria novaCategoria = new Categoria();
-                novaCategoria.setCategoria(categoriaNome);
-                novaCategoria.setProdutos(new ArrayList<>());
-                novaCategoria.getProdutos().add(produto);
-                categoriasFinal.add(novaCategoria);
-                entityManager.persist(novaCategoria);
-            }
-        }
-
-        produto.setCategorias(categoriasFinal);
         produto = repository.save(produto);
 
         return ProdutoMapper.toDto(produto);
     }
-
-
 
     public List<ProdutoDto> listarProdutos() {
         return repository.findAll().stream().map(ProdutoMapper::toDto).toList();
@@ -136,6 +109,24 @@ public class ProdutoService implements IProdutoService{
         removeProdutoFromCategorias(produto);
 
         repository.deleteById(id);
+    }
+
+    private void adicionarCategorias(Produto produto, List<CategoriaDto> categoriaDtos) throws NotFoundException {
+        List<String> categoriaNomes = categoriaDtos.stream()
+                .map(CategoriaDto::getCategoria)
+                .collect(Collectors.toList());
+
+        List<Categoria> categoriasExistentes = categoriaRepository.findAllByCategoriaIn(categoriaNomes);
+
+        if (categoriasExistentes.size() != categoriaNomes.size()) {
+            throw new NotFoundException(Categoria.class, "Algumas categorias não foram encontradas.");
+        }
+
+        for(Categoria categoria : categoriasExistentes) {
+            categoria.getProdutos().add(produto);
+        }
+
+        produto.setCategorias(categoriasExistentes);
     }
 
     public void removeProdutoFromCategorias(Produto produto) {

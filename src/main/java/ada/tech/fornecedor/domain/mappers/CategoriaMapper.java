@@ -13,6 +13,7 @@ public class CategoriaMapper {
         }
 
         return Categoria.builder()
+                .id(dto.getId())
                 .categoria(dto.getCategoria())
                 .build();
     }
@@ -23,6 +24,7 @@ public class CategoriaMapper {
         }
 
         return CategoriaDto.builder()
+                .id(entity.getId())
                 .categoria(entity.getCategoria())
                 .build();
     }

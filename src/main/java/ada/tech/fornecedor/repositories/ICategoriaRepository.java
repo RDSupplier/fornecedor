@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ICategoriaRepository extends JpaRepository<Categoria, Integer> {
     List<Categoria> findAllByCategoriaIn(List<String> categorias);
+
+    Categoria findByCategoria(String categoria);
 }

@@ -1,8 +1,8 @@
 package ada.tech.fornecedor.controllers;
 
-import ada.tech.fornecedor.domain.dto.ProdutoDto;
+import ada.tech.fornecedor.domain.dto.CategoriaDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
-import ada.tech.fornecedor.services.IProdutoService;
+import ada.tech.fornecedor.services.ICategoriaService;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,56 +13,55 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/fornecedor/produto")
-public class ProdutoController {
-
-    private final IProdutoService produtoService;
+@RequestMapping("/fornecedor/produto/categoria")
+public class CategoriaController {
+    private final ICategoriaService categoriaService;
 
     @Autowired
-    public ProdutoController(IProdutoService produtoService) {
-        this.produtoService = produtoService;
+    public CategoriaController(ICategoriaService categoriaService) {
+        this.categoriaService = categoriaService;
     }
 
     @PostMapping
-    public ResponseEntity<?> criarProduto(
-            @RequestBody ProdutoDto produtoDto
-    ) throws NotFoundException {
+    public ResponseEntity<?> criarCategoria(
+            @RequestBody CategoriaDto categoriaDto
+    ) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.criarProduto(produtoDto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.criarCategoria(categoriaDto));
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o produto: violação de integridade de dados");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar a categoria: violação de integridade de dados");
         } catch (ConstraintViolationException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o produto: violação de restrição de dados");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar a categoria: violação de restrição de dados");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<ProdutoDto>> listarProdutos() {
-        return ResponseEntity.ok(produtoService.listarProdutos());
+    public ResponseEntity<List<CategoriaDto>> listarCategorias() throws NotFoundException {
+        return ResponseEntity.ok(categoriaService.listarCategorias());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProdutoDto> listarProduto(
-            @PathVariable("id") int id
+    public ResponseEntity<CategoriaDto> listarCategoria(
+            @PathVariable int id
     ) throws NotFoundException {
-        return ResponseEntity.ok(produtoService.listarProduto(id));
+        return ResponseEntity.ok(categoriaService.listarCategoria(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizarProduto(
-            @PathVariable("id") int id,
-            @RequestBody ProdutoDto produtoDto
+    public ResponseEntity<?> atualizarCategoria(
+            @PathVariable int id,
+            @RequestBody CategoriaDto categoriaDto
     ) throws NotFoundException {
         try {
-            final ProdutoDto produto = produtoService.atualizarProduto(id, produtoDto);
+            final CategoriaDto categoria = categoriaService.atualizarCategoria(id, categoriaDto);
 
-            if (produto == null) {
+            if(categoria == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
 
-            return ResponseEntity.ok(produto);
+            return ResponseEntity.ok(categoria);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o produto: violação de integridade de dados");
         } catch (ConstraintViolationException e) {
@@ -73,10 +72,10 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarProduto(
-            @PathVariable("id") int id
+    public ResponseEntity<Void> deletarCategoria(
+            @PathVariable int id
     ) throws NotFoundException {
-        produtoService.deletarProduto(id);
+        categoriaService.deletarCategoria(id);
         return ResponseEntity.noContent().build();
     }
 }

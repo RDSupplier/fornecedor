@@ -1,6 +1,7 @@
 package ada.tech.fornecedor.domain.dto;
 
 
+import ada.tech.fornecedor.domain.dto.exceptions.AlreadyExistsException;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -35,5 +36,10 @@ public class ErrorResponse {
                 .map(it -> new ErrorMessage(it.getField(), it.getDefaultMessage()))
                 .collect(Collectors.toList());
         return new ErrorResponse("Validation errors", violations);
+    }
+
+    public static ErrorResponse createFromException(AlreadyExistsException ex) {
+        String message = ex.getClazz().getSimpleName() + " já existe com o id: " + ex.getId();
+        return new ErrorResponse(message);
     }
 }
