@@ -4,9 +4,7 @@ import ada.tech.fornecedor.domain.dto.PedidoProdutoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
-import ada.tech.fornecedor.repositories.IEstoqueRepository;
-import ada.tech.fornecedor.repositories.IPedidoRepository;
-import ada.tech.fornecedor.repositories.IProdutoRepository;
+import ada.tech.fornecedor.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,7 +28,9 @@ public class PedidoService implements IPedidoService {
 
     private final IPedidoRepository repository;
     private final IProdutoRepository produtoRepository;
-
+    private final IFornecedorRepository fornecedorRepository;
+    private final IEnderecoRepository enderecoRepository;
+    private final LogisticaService logisticaService;
 
     private final IEstoqueRepository estoqueRepository;
 
@@ -45,10 +45,14 @@ public class PedidoService implements IPedidoService {
 
 
 
+        Fornecedor fornecedor = fornecedorRepository.findById(pedidoDto.getFornecedor())
+                .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
+        pedido.setFornecedor(fornecedor);
 
-        Estoque estoque;
-            estoque = estoqueRepository.findById(pedidoDto.getEstoque())
-                    .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
+
+        Endereco endereco = enderecoRepository.findById(pedidoDto.getEndereco())
+                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+        pedido.setEndereco(endereco);
 
 
         for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
@@ -75,10 +79,6 @@ public class PedidoService implements IPedidoService {
             pedidoProduto.setQuantidade(pedidoProdutoDto.getQuantidade());
             pedidoProduto.setVolumeTotal(volumeTotalProduto);
 
-            if (estoque != null) {
-                pedidoProduto.setEstoque(estoque);
-            }
-
 
             pedidoProdutos.add(pedidoProduto);
         }
@@ -94,6 +94,8 @@ public class PedidoService implements IPedidoService {
 
         pedidoSalvo.getPedidoProduto().addAll(pedidoProdutos);
         pedidoSalvo = repository.save(pedidoSalvo);
+
+        logisticaService.enviarDadosLogistica(pedidoSalvo);
 
         return PedidoMapper.toDto(pedidoSalvo);
     }

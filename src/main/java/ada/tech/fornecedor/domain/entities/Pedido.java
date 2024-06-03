@@ -24,6 +24,14 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @ManyToOne
+    @JoinColumn(name = "id_fornecedor")
+    private Fornecedor fornecedor;
+
+    @ManyToOne
+    @JoinColumn(name = "id_endereco")
+    private Endereco endereco;
+
 
     @OneToMany(mappedBy = "pedidos", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<PedidoProduto> pedidoProduto = new ArrayList<>();

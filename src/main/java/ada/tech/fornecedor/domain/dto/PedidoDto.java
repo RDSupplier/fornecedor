@@ -26,7 +26,10 @@ public class PedidoDto {
 
     private LocalTime horario;
 
-    private int lojas;
+    private int fornecedor;
+
+    @NotNull
+    private int endereco;
 
     private int estoque;
 
