@@ -52,22 +52,16 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/v3/api-docs/**"),
                                 new AntPathRequestMatcher("/h2-console/**")
                         ))).permitAll()
-                        //loja
-                        .requestMatchers(HttpMethod.POST, "/fornecedor/loja").hasRole("LOJA") // cadastro de loja
-                        .requestMatchers(HttpMethod.POST, "/fornecedor/login/loja").hasRole("LOJA") // solicita o login
 
-                        //admin
-                        .requestMatchers(HttpMethod.POST, "/fornecedor").hasRole("ADMIN") // cadastra fornecedores
-                        .requestMatchers(HttpMethod.POST, "/fornecedor/**").hasRole("ADMIN") // consultar distancia entre loja e fornecedor
-                        .requestMatchers(HttpMethod.PUT, "/fornecedor/**").hasRole("ADMIN") // atualiza dados do fornecedor
+                        .requestMatchers(HttpMethod.POST, "/fornecedor").hasRole("FORNECEDOR") // fornecedor realiza cadastro
+                        .requestMatchers(HttpMethod.PUT, "/fornecedor/**").hasRole("FORNECEDOR") // atualiza dados do fornecedor
                         .requestMatchers(HttpMethod.GET, "/fornecedor/**").hasRole("ADMIN") // visualiza fornecedores
-                        .requestMatchers(HttpMethod.DELETE, "/fornecedor/loja/**").hasRole("ADMIN") // deleta lojas
                         .requestMatchers(HttpMethod.DELETE, "/fornecedor/**").hasRole("ADMIN") // deleta fornecedores
                         .requestMatchers(HttpMethod.POST, "/fornecedor/logistica/**").hasRole("ADMIN") 
 
-                        //login admin
+                        //logins
                         .requestMatchers(HttpMethod.POST, "/login/admin").hasRole("ADMIN") //login de adm
-
+                        .requestMatchers(HttpMethod.POST, "/login/fornecedor").hasRole("FORNECEDOR") //login de fornecedor
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())

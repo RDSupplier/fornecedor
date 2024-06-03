@@ -41,4 +41,8 @@ public class Fornecedor {
     private String nome;
 
     private String senha;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 }
