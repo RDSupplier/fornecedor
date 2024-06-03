@@ -63,6 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/fornecedor/**").hasRole("ADMIN") // visualiza fornecedores
                         .requestMatchers(HttpMethod.DELETE, "/fornecedor/loja/**").hasRole("ADMIN") // deleta lojas
                         .requestMatchers(HttpMethod.DELETE, "/fornecedor/**").hasRole("ADMIN") // deleta fornecedores
+                        .requestMatchers(HttpMethod.POST, "/fornecedor/logistica/**").hasRole("ADMIN") 
 
                         //login admin
                         .requestMatchers(HttpMethod.POST, "/login/admin").hasRole("ADMIN") //login de adm

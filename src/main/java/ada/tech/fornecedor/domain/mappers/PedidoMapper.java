@@ -20,6 +20,8 @@ public class PedidoMapper {
                 .horario(entity.getHorario())
                 .total(entity.getTotal())
                 .volumeTotal(entity.getVolumeTotal())
+                .fornecedor(entity.getFornecedor().getId())
+                .endereco(entity.getEndereco().getId())
                 .id(entity.getId())
                 .build();
     }
