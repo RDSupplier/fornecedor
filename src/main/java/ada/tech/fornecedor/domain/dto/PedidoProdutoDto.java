@@ -23,4 +23,6 @@ public class PedidoProdutoDto {
     @Positive
     @NotNull
     private double volumeTotal;
+
+    private ProdutoDto produto;
 }
