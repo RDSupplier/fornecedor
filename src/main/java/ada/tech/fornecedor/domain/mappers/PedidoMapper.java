@@ -19,18 +19,34 @@ public class PedidoMapper {
     }
 
     public static PedidoDto toDto(Pedido entity) {
-        return PedidoDto.builder()
+        PedidoDto pedidoDto = PedidoDto.builder()
                 .data(entity.getData())
                 .horario(entity.getHorario())
                 .total(entity.getTotal())
                 .volumeTotal(entity.getVolumeTotal())
                 .fornecedor(entity.getFornecedor().getId())
-                .endereco(entity.getEndereco().getId())
                 .id(entity.getId())
                 .produtos(entity.getPedidoProduto().stream()
                         .map(PedidoMapper::toPedidoProdutoDto)
                         .collect(Collectors.toList()))
                 .build();
+
+        EnderecoDto enderecoDto = new EnderecoDto(); // Criando um objeto EnderecoDto vazio
+
+        // Preenchendo o objeto EnderecoDto apenas se houver um endereço associado ao pedido
+        if (entity.getEndereco() != null) {
+            enderecoDto.setRua(entity.getEndereco().getRua());
+            enderecoDto.setNumero(entity.getEndereco().getNumero());
+            enderecoDto.setComplemento(entity.getEndereco().getComplemento());
+            enderecoDto.setBairro(entity.getEndereco().getBairro());
+            enderecoDto.setCidade(entity.getEndereco().getCidade());
+            enderecoDto.setEstado(entity.getEndereco().getEstado());
+            enderecoDto.setCep(entity.getEndereco().getCep());
+        }
+
+        pedidoDto.setEndereco(enderecoDto); // Define o endereço no DTO
+
+        return pedidoDto;
     }
     private static PedidoProdutoDto toPedidoProdutoDto(PedidoProduto pedidoProduto) {
         Produto produto = pedidoProduto.getProdutos();

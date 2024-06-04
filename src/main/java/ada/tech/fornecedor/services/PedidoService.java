@@ -50,8 +50,10 @@ public class PedidoService implements IPedidoService {
         pedido.setFornecedor(fornecedor);
 
 
-        Endereco endereco = enderecoRepository.findById(pedidoDto.getEndereco())
-                .orElseThrow(() -> new RuntimeException("Endereço não encontrado"));
+        Endereco endereco = fornecedor.getEnderecos();
+        if (endereco == null) {
+            throw new RuntimeException("Endereço não encontrado para o fornecedor");
+        }
         pedido.setEndereco(endereco);
 
 

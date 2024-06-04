@@ -28,8 +28,7 @@ public class PedidoDto {
 
     private int fornecedor;
 
-    @NotNull
-    private int endereco;
+    private EnderecoDto endereco;
 
     private int estoque;
 
