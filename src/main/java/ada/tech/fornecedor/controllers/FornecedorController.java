@@ -59,6 +59,13 @@ public class FornecedorController {
         return ResponseEntity.ok(fornecedorService.listarFornecedor(id));
     }
 
+    @GetMapping("/{id}/pedidos")
+    public ResponseEntity<?> listarPedidos(
+            @PathVariable("id") int id
+    ) throws NotFoundException {
+        return ResponseEntity.ok(fornecedorService.listarPedidos(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizarFornecedor(
             @PathVariable("id") int id,

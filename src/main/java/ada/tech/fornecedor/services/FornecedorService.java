@@ -1,15 +1,12 @@
 package ada.tech.fornecedor.services;
 
-import ada.tech.fornecedor.domain.dto.EnderecoDto;
-import ada.tech.fornecedor.domain.dto.FornecedorDto;
-import ada.tech.fornecedor.domain.dto.LoginDto;
-import ada.tech.fornecedor.domain.dto.LoginResponse;
+import ada.tech.fornecedor.domain.dto.*;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
-import ada.tech.fornecedor.domain.entities.Endereco;
-import ada.tech.fornecedor.domain.entities.Fornecedor;
-import ada.tech.fornecedor.domain.entities.Role;
+import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.EnderecoMapper;
 import ada.tech.fornecedor.domain.mappers.FornecedorMapper;
+import ada.tech.fornecedor.domain.mappers.PedidoMapper;
+import ada.tech.fornecedor.domain.mappers.ProdutoMapper;
 import ada.tech.fornecedor.repositories.IEnderecoRepository;
 import ada.tech.fornecedor.repositories.IFornecedorRepository;
 import ada.tech.fornecedor.repositories.IRoleRepository;
@@ -18,8 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +59,45 @@ public class FornecedorService implements IFornecedorService {
     @Override
     public FornecedorDto listarFornecedor(int id) throws NotFoundException {
         return FornecedorMapper.toDto(searchFornecedorById(id));
+    }
+
+    @Override
+    public List<PedidoDto> listarPedidos(int id) throws NotFoundException {
+        Fornecedor fornecedor = searchFornecedorById(id);
+
+        if (fornecedor == null) {
+            throw new NotFoundException(Fornecedor.class, String.valueOf(id));
+        }
+
+        Estoque estoque = fornecedor.getEstoques().get(0);
+
+        Map<Integer, PedidoDto> pedidosPorId = new HashMap<>();
+
+        for (Produto produto : estoque.getProdutos()) {
+            for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
+                Pedido pedido = pedidoProduto.getPedidos();
+
+                if (pedido.getFornecedor().getId() == fornecedor.getId()) {
+                    PedidoDto pedidoDto = pedidosPorId.getOrDefault(pedido.getId(), PedidoMapper.toDto(pedido));
+
+                    PedidoProdutoDto pedidoProdutoDto = new PedidoProdutoDto();
+                    pedidoProdutoDto.setProduto(ProdutoMapper.toDto(produto));
+                    pedidoProdutoDto.setQuantidade(pedidoProduto.getQuantidade());
+
+                    boolean produtoJaAdicionado = pedidoDto.getProdutos().stream().anyMatch(p ->
+                            p.getProduto().getId() == produto.getId() &&
+                                    p.getId() == pedidoProduto.getId());
+
+                    if (!produtoJaAdicionado) {
+                        pedidoDto.getProdutos().add(pedidoProdutoDto);
+                    }
+
+                    pedidosPorId.put(pedido.getId(), pedidoDto);
+                }
+            }
+        }
+
+        return new ArrayList<>(pedidosPorId.values());
     }
 
     @Override
@@ -138,6 +173,16 @@ public class FornecedorService implements IFornecedorService {
         }
     }
 
+    private boolean isPedidoAAssociatedWithFornecedor(Pedido pedido, Fornecedor fornecedor) {
+        for(PedidoProduto pedidoProduto : pedido.getPedidoProduto()) {
+            Produto produto = pedidoProduto.getProdutos();
+            for(Estoque estoque : produto.getEstoques()) {
+                if(estoque.getFornecedor().getId() == fornecedor.getId()) {
+                    return true;
+                }
+            }
+        }
 
-
+        return false;
+    }
 }
