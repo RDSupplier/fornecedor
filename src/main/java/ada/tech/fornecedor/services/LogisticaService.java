@@ -2,14 +2,19 @@ package ada.tech.fornecedor.services;
 
 import ada.tech.fornecedor.domain.entities.Endereco;
 import ada.tech.fornecedor.domain.entities.Pedido;
+import ada.tech.fornecedor.external.ILogisticaApi;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Service
 public class LogisticaService {
 
-    public void enviarDadosLogistica(Pedido pedido) {
+    //@PostMapping("https://crudcrud.com/api/55bae12b3cc74fe9af1dcf6863dc4645/logistica")
+    public String enviarDadosLogistica(Pedido pedido) {
         String jsonLogistica = criarJsonLogistica(pedido);
         System.out.println("Enviando dados para o módulo de logística: " + jsonLogistica);
+        return jsonLogistica;
     }
 
     private String criarJsonLogistica(Pedido pedido) {
