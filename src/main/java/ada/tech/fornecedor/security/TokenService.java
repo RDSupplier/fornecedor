@@ -1,6 +1,7 @@
 package ada.tech.fornecedor.security;
 
 
+import ada.tech.fornecedor.domain.entities.Admin;
 import ada.tech.fornecedor.domain.entities.Fornecedor;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -28,6 +29,22 @@ public class TokenService {
             throw new RuntimeException("Error while generating token", exception);
         }
     }
+
+    public String generateTokenAdmin(Admin admin) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            String token = JWT.create()
+                    .withIssuer("auth-api")
+                    .withSubject(String.valueOf(admin.getNome()))
+                    .withClaim("adminId", admin.getId())
+                    .withClaim("role", admin.getRole().getName())
+                    .sign(algorithm);
+            return token;
+        } catch (JWTCreationException exception) {
+            throw new RuntimeException("Error while generating token", exception);
+        }
+    }
+
 
     public String validateToken(String token) {
         try {

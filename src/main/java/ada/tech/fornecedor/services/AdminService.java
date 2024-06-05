@@ -3,6 +3,7 @@ package ada.tech.fornecedor.services;
 import ada.tech.fornecedor.domain.dto.AdminDto;
 import ada.tech.fornecedor.domain.dto.LoginResponse;
 import ada.tech.fornecedor.domain.entities.Admin;
+import ada.tech.fornecedor.domain.entities.Fornecedor;
 import ada.tech.fornecedor.domain.entities.Role;
 import ada.tech.fornecedor.repositories.IAdminRepository;
 import ada.tech.fornecedor.repositories.IRoleRepository;
@@ -65,5 +66,9 @@ public class AdminService implements IAdminService{
         } else {
             return new LoginResponse("Admin não encontrado", false, admin.getId());
         }
+    }
+
+    public Admin obterAdminEntidade(int id) {
+        return repository.findById(id).orElse(null);
     }
 }
