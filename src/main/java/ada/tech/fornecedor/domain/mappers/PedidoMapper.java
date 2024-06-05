@@ -31,9 +31,8 @@ public class PedidoMapper {
                         .collect(Collectors.toList()))
                 .build();
 
-        EnderecoDto enderecoDto = new EnderecoDto(); // Criando um objeto EnderecoDto vazio
+        EnderecoDto enderecoDto = new EnderecoDto();
 
-        // Preenchendo o objeto EnderecoDto apenas se houver um endereço associado ao pedido
         if (entity.getEndereco() != null) {
             enderecoDto.setRua(entity.getEndereco().getRua());
             enderecoDto.setNumero(entity.getEndereco().getNumero());
@@ -44,7 +43,7 @@ public class PedidoMapper {
             enderecoDto.setCep(entity.getEndereco().getCep());
         }
 
-        pedidoDto.setEndereco(enderecoDto); // Define o endereço no DTO
+        pedidoDto.setEndereco(enderecoDto);
 
         return pedidoDto;
     }

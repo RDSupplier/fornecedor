@@ -19,9 +19,6 @@ public class PedidoProduto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "id_estoque")
-    private Estoque estoque;
 
     @ManyToOne
     @JoinColumn(name = "id_pedido")

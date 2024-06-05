@@ -30,8 +30,6 @@ public class PedidoDto {
 
     private EnderecoDto endereco;
 
-    private int estoque;
-
     @Positive
     @NotNull
     private double total;
