@@ -58,12 +58,12 @@ public class AdminService implements IAdminService{
         if (admin != null) {
             String senhaEncoded = admin.getSenha();
             if (passwordEncoder.matches(senha, senhaEncoded)) {
-                return new LoginResponse("Login bem-sucedido", true);
+                return new LoginResponse("Login bem-sucedido", true, admin.getId());
             } else {
-                return new LoginResponse("Dados incorretos", false);
+                return new LoginResponse("Dados incorretos", false, admin.getId());
             }
         } else {
-            return new LoginResponse("Admin não encontrado", false);
+            return new LoginResponse("Admin não encontrado", false, admin.getId());
         }
     }
 }

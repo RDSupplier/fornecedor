@@ -5,6 +5,7 @@ import ada.tech.fornecedor.domain.dto.LoginDto;
 import ada.tech.fornecedor.domain.dto.LoginResponse;
 import ada.tech.fornecedor.domain.dto.PedidoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
+import ada.tech.fornecedor.domain.entities.Fornecedor;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface IFornecedorService {
     FornecedorDto atualizarFornecedor(int id, FornecedorDto fornecedor) throws NotFoundException;
     void deletarFornecedor(int id) throws NotFoundException;
     LoginResponse loginFornecedor(LoginDto loginDto);
+
+    Fornecedor obterFornecedorEntidade(int id);
 }

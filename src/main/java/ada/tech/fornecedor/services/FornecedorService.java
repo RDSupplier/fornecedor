@@ -164,12 +164,12 @@ public class FornecedorService implements IFornecedorService {
         if (fornecedor != null) {
             String senhaEncoded = fornecedor.getSenha();
             if (passwordEncoder.matches(senha, senhaEncoded)) {
-                return new LoginResponse("Login bem-sucedido", true);
+                return new LoginResponse("Login bem-sucedido", true, fornecedor.getId());
             } else {
-                return new LoginResponse("Dados incorretos", false);
+                return new LoginResponse("Dados incorretos", false, fornecedor.getId());
             }
         } else {
-            return new LoginResponse("Fornecedor não encontrado", false);
+            return new LoginResponse("Fornecedor não encontrado", false, fornecedor.getId());
         }
     }
 
@@ -184,5 +184,9 @@ public class FornecedorService implements IFornecedorService {
         }
 
         return false;
+    }
+
+    public Fornecedor obterFornecedorEntidade(int id) {
+        return repository.findById(id).orElse(null);
     }
 }

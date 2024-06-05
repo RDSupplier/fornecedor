@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class LoginResponse {
     private String message;
     private Boolean status;
+    private int id;
 
 }

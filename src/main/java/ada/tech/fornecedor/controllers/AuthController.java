@@ -3,6 +3,9 @@ package ada.tech.fornecedor.controllers;
 import ada.tech.fornecedor.domain.dto.AdminDto;
 import ada.tech.fornecedor.domain.dto.LoginDto;
 import ada.tech.fornecedor.domain.dto.LoginResponse;
+import ada.tech.fornecedor.domain.entities.Fornecedor;
+import ada.tech.fornecedor.security.TokenResponseDto;
+import ada.tech.fornecedor.security.TokenService;
 import ada.tech.fornecedor.services.IAdminService;
 import ada.tech.fornecedor.services.IFornecedorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,10 @@ public class AuthController {
 
     private final IAdminService adminService;
     private final IFornecedorService fornecedorService;
+
+
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     public AuthController( IAdminService adminService, IFornecedorService fornecedorService){
@@ -41,7 +48,10 @@ public class AuthController {
     public ResponseEntity<?> loginLoja(@RequestBody LoginDto loginDTO) {
         LoginResponse loginResponse = fornecedorService.loginFornecedor(loginDTO);
         if (loginResponse.getStatus()) {
-            return ResponseEntity.ok(loginResponse);
+            Fornecedor fornecedor = fornecedorService.obterFornecedorEntidade(loginResponse.getId());
+            var token = tokenService.generateTokenFornecedor(fornecedor);
+            TokenResponseDto tokenResponse = new TokenResponseDto(token);
+            return ResponseEntity.ok(tokenResponse);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
         }
