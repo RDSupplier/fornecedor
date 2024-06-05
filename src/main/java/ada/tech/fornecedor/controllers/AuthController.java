@@ -49,7 +49,7 @@ public class AuthController {
     }
 
     @PostMapping(path = "/login/fornecedor")
-    public ResponseEntity<?> loginLoja(@RequestBody LoginDto loginDTO) {
+    public ResponseEntity<?> loginFornecedor(@RequestBody LoginDto loginDTO) {
         LoginResponse loginResponse = fornecedorService.loginFornecedor(loginDTO);
         if (loginResponse.getStatus()) {
             Fornecedor fornecedor = fornecedorService.obterFornecedorEntidade(loginResponse.getId());
