@@ -1,9 +1,8 @@
 package ada.tech.fornecedor.controllers;
 
 import ada.tech.fornecedor.domain.entities.Pedido;
-import ada.tech.fornecedor.external.ILogisticaApi;
 import ada.tech.fornecedor.services.LogisticaService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -2,10 +2,8 @@ package ada.tech.fornecedor.services;
 
 import ada.tech.fornecedor.domain.entities.Endereco;
 import ada.tech.fornecedor.domain.entities.Pedido;
-import ada.tech.fornecedor.external.ILogisticaApi;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
+
 
 @Service
 public class LogisticaService {
