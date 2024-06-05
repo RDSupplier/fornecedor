@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogisticaController {
     private final LogisticaService logisticaService;
 
-    @Autowired
-    ILogisticaApi logisticaApi;
+
 
     public LogisticaController(LogisticaService logisticaService) {
         this.logisticaService = logisticaService;
