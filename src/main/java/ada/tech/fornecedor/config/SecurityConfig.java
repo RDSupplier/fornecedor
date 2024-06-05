@@ -52,8 +52,7 @@ public class SecurityConfig {
                                 new AntPathRequestMatcher("/v3/api-docs/**"),
                                 new AntPathRequestMatcher("/h2-console/**")
                         ))).permitAll()
-
-                        .requestMatchers(HttpMethod.POST, "/fornecedor").hasRole("FORNECEDOR") // fornecedor realiza cadastro
+                        .requestMatchers(HttpMethod.POST, "/fornecedor").permitAll() // cadastro de fornecedores
                         .requestMatchers(HttpMethod.PUT, "/fornecedor/**").hasRole("FORNECEDOR") // atualiza dados do fornecedor
                         .requestMatchers(HttpMethod.GET, "/fornecedor/**").hasRole("ADMIN") // visualiza fornecedores
                         .requestMatchers(HttpMethod.DELETE, "/fornecedor/**").hasRole("ADMIN") // deleta fornecedores
@@ -61,7 +60,7 @@ public class SecurityConfig {
 
                         //logins
                         .requestMatchers(HttpMethod.POST, "/login/admin").hasRole("ADMIN") //login de adm
-                        .requestMatchers(HttpMethod.POST, "/login/fornecedor").hasRole("FORNECEDOR") //login de fornecedor
+                        .requestMatchers(HttpMethod.POST, "/fornecedor/login").hasRole("FORNECEDOR") //login de fornecedor
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
