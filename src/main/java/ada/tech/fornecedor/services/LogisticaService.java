@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LogisticaService {
-
-    //@PostMapping("https://crudcrud.com/api/55bae12b3cc74fe9af1dcf6863dc4645/logistica")
     public String enviarDadosLogistica(Pedido pedido) {
         String jsonLogistica = criarJsonLogistica(pedido);
         System.out.println("Enviando dados para o módulo de logística: " + jsonLogistica);
