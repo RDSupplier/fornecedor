@@ -59,8 +59,6 @@ public class PedidoMapper {
                         .nomeComercial(produto.getNomeComercial())
                         .principioAtivo(produto.getPrincipioAtivo())
                         .apresentacao(produto.getApresentacao())
-                        .lote(produto.getLote())
-                        .dataFabricacao(produto.getDataFabricacao())
                         .preco(produto.getPreco())
                         .cargaPerigosa(produto.isCargaPerigosa())
                         .volume(produto.getVolume())

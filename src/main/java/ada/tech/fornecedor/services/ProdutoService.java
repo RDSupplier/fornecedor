@@ -91,8 +91,6 @@ public class ProdutoService implements IProdutoService{
         produto.setNomeComercial(produtoDto.getNomeComercial());
         produto.setPrincipioAtivo(produtoDto.getPrincipioAtivo());
         produto.setApresentacao(produtoDto.getApresentacao());
-        produto.setLote(produtoDto.getLote());
-        produto.setDataFabricacao(produtoDto.getDataFabricacao());
         produto.setCodigoBarras(produtoDto.getCodigoBarras());
         produto.setImagem(produtoDto.getImagem());
         produto.setPreco(produtoDto.getPreco());

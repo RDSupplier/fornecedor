@@ -53,12 +53,6 @@ public class Produto {
     @Column(name = "apresentacao", length = 100)
     private String apresentacao;
 
-    @Size(max = 50, message = "O lote do produto não pode exceder 50 caracteres")
-    @Column(length = 50)
-    private String lote;
-
-    @Column(name = "data_fabricacao")
-    private LocalDate dataFabricacao;
 
     @Column(precision = 10)
     private double preco;

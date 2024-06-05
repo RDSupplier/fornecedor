@@ -44,12 +44,6 @@ public class ProdutoDto {
     @Size(max = 100, message = "A apresentação do produto não pode exceder 100 caracteres")
     private String apresentacao;
 
-    @NotBlank
-    @NotEmpty
-    @Size(max = 50, message = "O lote não pode exceder 50 caracteres")
-    private String lote;
-
-    private LocalDate dataFabricacao;
 
     @PositiveOrZero
     private double preco;
