@@ -45,8 +45,8 @@ public class Endereco {
     @Column(length = 30)
     private String cidade;
 
-    @Size(max = 2, message = "A sigla do estado não pode exceder 2 caracteres")
-    @Column(length = 2)
+    @Size(max = 15, message = "O nome do estado não pode exceder 15 caracteres")
+    @Column(length = 15)
     private String estado;
 
     @Size(max = 8, message = "O CEP não pode exceder 8 caracteres")
