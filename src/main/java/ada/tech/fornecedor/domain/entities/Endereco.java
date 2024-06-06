@@ -22,7 +22,7 @@ public class Endereco {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToMany(mappedBy = "enderecos")
+    @OneToMany(mappedBy = "enderecos", cascade = CascadeType.PERSIST)
     private List<Fornecedor> fornecedores = new ArrayList<>();
 
     @Size(max = 50, message = "O nome da rua não pode exceder 50 caracteres")

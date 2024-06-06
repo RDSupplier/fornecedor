@@ -28,7 +28,7 @@ public class Pedido {
     @JoinColumn(name = "id_fornecedor")
     private Fornecedor fornecedor;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_endereco")
     private Endereco endereco;
 

@@ -6,21 +6,12 @@ import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
 import ada.tech.fornecedor.repositories.*;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.springframework.stereotype.Service;
-import org.json.JSONObject;
-
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +50,13 @@ public class PedidoService implements IPedidoService {
                 .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
         pedido.setFornecedor(fornecedor);
 
+        Endereco endereco = fornecedor.getEnderecos();
+        if (endereco == null) {
+            throw new RuntimeException("Endereço não encontrado para o fornecedor");
+        }
+
         Endereco enderecoDestino = mockEnderecoDestino();
-        fornecedor.setEnderecos(enderecoDestino);
+        fornecedor.setEnderecos(endereco);
         pedido.setEndereco(enderecoDestino);
 
 
