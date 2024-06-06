@@ -34,6 +34,17 @@ public class PedidoService implements IPedidoService {
 
     private final IEstoqueRepository estoqueRepository;
 
+    public Endereco mockEnderecoDestino() {
+        return Endereco.builder()
+                .rua("Avenida Paulista")
+                .numero("138")
+                .complemento("bloco b")
+                .bairro("itarare")
+                .cidade("São Paulo")
+                .estado("SP")
+                .cep(11350186)
+                .build();
+    }
     @Override
     public PedidoDto criarPedido(PedidoDto pedidoDto) {
         Pedido pedido = new Pedido();
@@ -44,17 +55,13 @@ public class PedidoService implements IPedidoService {
         double volumeTotalProduto = 0.0;
 
 
-
         Fornecedor fornecedor = fornecedorRepository.findById(pedidoDto.getFornecedor())
                 .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
         pedido.setFornecedor(fornecedor);
 
-
-        Endereco endereco = fornecedor.getEnderecos();
-        if (endereco == null) {
-            throw new RuntimeException("Endereço não encontrado para o fornecedor");
-        }
-        pedido.setEndereco(endereco);
+        Endereco enderecoDestino = mockEnderecoDestino();
+        fornecedor.setEnderecos(enderecoDestino);
+        pedido.setEndereco(enderecoDestino);
 
 
         for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
