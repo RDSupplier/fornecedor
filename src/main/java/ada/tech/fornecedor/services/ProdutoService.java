@@ -39,14 +39,13 @@ public class ProdutoService implements IProdutoService{
         Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
 
         if (fabricanteExistente != null) {
-            produtoDto.setFabricante(FabricanteMapper.toDto(fabricanteExistente));
+            fabricante = fabricanteExistente;
         } else {
-            fabricanteExistente = fabricanteRepository.save(fabricante);
-            produtoDto.setFabricante(FabricanteMapper.toDto(fabricanteExistente));
+            fabricante = fabricanteRepository.save(fabricante);
         }
 
         Produto produto = ProdutoMapper.toEntity(produtoDto);
-        produto.setFabricante(fabricanteExistente);
+        produto.setFabricante(fabricante);
 
         adicionarCategorias(produto, produtoDto.getCategorias());
 
