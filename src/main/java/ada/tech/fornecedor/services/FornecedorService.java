@@ -8,6 +8,7 @@ import ada.tech.fornecedor.domain.mappers.FornecedorMapper;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
 import ada.tech.fornecedor.domain.mappers.ProdutoMapper;
 import ada.tech.fornecedor.repositories.IEnderecoRepository;
+import ada.tech.fornecedor.repositories.IEstoqueRepository;
 import ada.tech.fornecedor.repositories.IFornecedorRepository;
 import ada.tech.fornecedor.repositories.IRoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.*;
 public class FornecedorService implements IFornecedorService {
 
     private final IFornecedorRepository repository;
+    private final IEstoqueRepository estoqueRepository;
     private final IEnderecoRepository enderecoRepository;
     private final IRoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -138,6 +140,7 @@ public class FornecedorService implements IFornecedorService {
 
     @Override
     public void deletarFornecedor(int id) throws NotFoundException {
+        estoqueRepository.deleteById(id);
         repository.deleteById(id);
     }
 
