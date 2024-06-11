@@ -36,14 +36,14 @@ http://localhost:8080/swagger-ui/index.html
 
 
 **Fornecedor**<br/>
-![](images/fornecedor-controller.PNG)
+![](images/fornecedor-controller.PNG)<br/>
 **Produto**<br/>
-![](images/produto-controller.PNG)
+![](images/produto-controller.PNG)<br/>
 **Pedido**<br/>
-![](images/pedido-controller.PNG)
+![](images/pedido-controller.PNG)<br/>
 **Categoria**<br/>
-![](images/categoria-controller.PNG)
+![](images/categoria-controller.PNG)<br/>
 **Estoque**<br/>
-![](images/estoque-controller.PNG)
+![](images/estoque-controller.PNG)<br/>
 **Logistica e Auth**<br/>
-![](images/logistica-auth-controller.PNG)
+![](images/logistica-auth-controller.PNG)<br/>
