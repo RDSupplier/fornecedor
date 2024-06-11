@@ -34,5 +34,16 @@ http://localhost:8080/swagger-ui/index.html
 ```
 ## Swagger
 
-![](images/fornecedor-controller.PNG)
 
+**Fornecedor**<br/>
+![](images/fornecedor-controller.PNG)
+**Produto**<br/>
+![](images/produto-controller.PNG)
+**Pedido**<br/>
+![](images/pedido-controller.PNG)
+**Categoria**<br/>
+![](images/categoria-controller.PNG)
+**Estoque**<br/>
+![](images/estoque-controller.PNG)
+**Logistica e Auth**<br/>
+![](images/logistica-auth-controller.PNG)
