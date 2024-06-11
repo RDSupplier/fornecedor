@@ -54,6 +54,7 @@ public class SecurityConfig {
                         ))).permitAll()
                         .requestMatchers(HttpMethod.POST, "/fornecedor").permitAll() // cadastro de fornecedores
                         .requestMatchers(HttpMethod.PUT, "/fornecedor/**").hasRole("FORNECEDOR") // atualiza dados do fornecedor
+                        .requestMatchers(HttpMethod.PATCH, "/fornecedor/**").hasRole("FORNECEDOR") // atualiza dados do fornecedor
                         .requestMatchers(HttpMethod.GET, "/fornecedor/**").hasRole("ADMIN") // visualiza fornecedores
                         .requestMatchers(HttpMethod.DELETE, "/fornecedor/**").hasRole("ADMIN") // deleta fornecedores
                         .requestMatchers(HttpMethod.POST, "/fornecedor/logistica/**").hasRole("ADMIN") 
