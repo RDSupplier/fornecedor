@@ -16,10 +16,11 @@ O sistema também possui um usuário admin interno, onde é possível consultar 
 ### 🛠 Tecnologias
 - [Java 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 - [Maven](https://maven.apache.org/download.cgi)
-- [PostgreSQL](https://www.postgresql.org)
+- [PostgreSQL](https://www.postgresql.org) ([Amazon RDS](https://aws.amazon.com/pt/rds/))
 - [Hibernate](https://hibernate.org)
 - [Lombok](https://projectlombok.org)
 - [Swagger](https://swagger.io)
+- [Amazon Elastic Beanstalk](https://aws.amazon.com/pt/elasticbeanstalk/)
 
 ## Como rodar
 
