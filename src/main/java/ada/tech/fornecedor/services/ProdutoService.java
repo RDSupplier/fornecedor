@@ -73,15 +73,13 @@ public class ProdutoService implements IProdutoService{
         FabricanteDto fabricanteDto = produtoDto.getFabricante();
         Fabricante fabricante = FabricanteMapper.toEntity(fabricanteDto);
 
-//        Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
+        Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
 
-//        if (fabricanteExistente != null) {
-//            produto.setFabricante(fabricanteExistente);
-//        } else {
-//            throw new NotFoundException(Fabricante.class, String.valueOf(fabricanteDto));
-//        }
-
-            produto.setFabricante(fabricante);
+        if (fabricanteExistente != null) {
+            produto.setFabricante(fabricanteExistente);
+        } else {
+            throw new NotFoundException(Fabricante.class, String.valueOf(fabricanteDto));
+        }
 
         List <String> categoriaNomes = produtoDto.getCategorias().stream()
                 .map(CategoriaDto::getCategoria)
