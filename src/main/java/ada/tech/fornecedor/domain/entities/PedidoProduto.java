@@ -19,7 +19,6 @@ public class PedidoProduto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-
     @ManyToOne
     @JoinColumn(name = "id_pedido")
     private Pedido pedidos;

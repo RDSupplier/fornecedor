@@ -4,15 +4,15 @@ import ada.tech.fornecedor.domain.dto.CategoriaDto;
 import ada.tech.fornecedor.domain.dto.FabricanteDto;
 import ada.tech.fornecedor.domain.dto.ProdutoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
-import ada.tech.fornecedor.domain.entities.Categoria;
-import ada.tech.fornecedor.domain.entities.Fabricante;
-import ada.tech.fornecedor.domain.entities.Produto;
+import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.FabricanteMapper;
 import ada.tech.fornecedor.domain.mappers.ProdutoMapper;
 import ada.tech.fornecedor.repositories.ICategoriaRepository;
 import ada.tech.fornecedor.repositories.IFabricanteRepository;
 import ada.tech.fornecedor.repositories.IProdutoRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,8 @@ public class ProdutoService implements IProdutoService{
     private final IProdutoRepository repository;
     private final IFabricanteRepository fabricanteRepository;
     private final ICategoriaRepository categoriaRepository;
+
+    @PersistenceContext
     private final EntityManager entityManager;
 
     @Override
@@ -70,13 +72,16 @@ public class ProdutoService implements IProdutoService{
 
         FabricanteDto fabricanteDto = produtoDto.getFabricante();
         Fabricante fabricante = FabricanteMapper.toEntity(fabricanteDto);
-        Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
 
-        if (fabricanteExistente != null) {
-            produto.setFabricante(fabricanteExistente);
-        } else {
-            throw new NotFoundException(Fabricante.class, String.valueOf(fabricanteDto));
-        }
+//        Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
+
+//        if (fabricanteExistente != null) {
+//            produto.setFabricante(fabricanteExistente);
+//        } else {
+//            throw new NotFoundException(Fabricante.class, String.valueOf(fabricanteDto));
+//        }
+
+            produto.setFabricante(fabricante);
 
         List <String> categoriaNomes = produtoDto.getCategorias().stream()
                 .map(CategoriaDto::getCategoria)
@@ -101,12 +106,16 @@ public class ProdutoService implements IProdutoService{
         return ProdutoMapper.toDto(repository.save(produto));
     }
 
+    @Transactional
     public void deletarProduto(int id) throws NotFoundException {
-        Produto produto = searchProdutoById(id);
-
-        removeProdutoFromCategorias(produto);
-
-        repository.deleteById(id);
+        Produto produto = entityManager.find(Produto.class, id);
+        if (produto != null) {
+            removerCategorias(produto);
+            removerPedidos(produto);
+            entityManager.remove(produto);
+        } else {
+            throw new NotFoundException(Produto.class, String.valueOf(id));
+        }
     }
 
     private void adicionarCategorias(Produto produto, List<CategoriaDto> categoriaDtos) throws NotFoundException {
@@ -127,9 +136,19 @@ public class ProdutoService implements IProdutoService{
         produto.setCategorias(categoriasExistentes);
     }
 
-    public void removeProdutoFromCategorias(Produto produto) {
+    public void removerCategorias(Produto produto) {
         for (Categoria categoria : produto.getCategorias()) {
             categoria.getProdutos().remove(produto);
+        }
+        produto.getCategorias().clear();
+        entityManager.merge(produto);
+    }
+
+    public void removerPedidos(Produto produto) {
+        for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
+            Pedido pedido = pedidoProduto.getPedidos();
+            pedido.getPedidoProduto().remove(pedidoProduto);
+            pedidoProduto.setProdutos(null);
         }
     }
 

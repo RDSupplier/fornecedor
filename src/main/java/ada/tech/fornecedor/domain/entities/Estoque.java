@@ -6,9 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Builder
 @Data
@@ -21,7 +19,7 @@ public class Estoque {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany(mappedBy = "estoques")
+    @ManyToMany(mappedBy = "estoques", cascade = CascadeType.ALL)
     private List<Produto> produtos;
 
     @ManyToOne

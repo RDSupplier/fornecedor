@@ -76,7 +76,12 @@ public class ProdutoController {
     public ResponseEntity<Void> deletarProduto(
             @PathVariable("id") int id
     ) throws NotFoundException {
-        produtoService.deletarProduto(id);
-        return ResponseEntity.noContent().build();
+        try {
+            produtoService.deletarProduto(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 }

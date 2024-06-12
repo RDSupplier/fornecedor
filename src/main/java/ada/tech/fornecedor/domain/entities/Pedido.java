@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ManyToAny;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -32,8 +31,7 @@ public class Pedido {
     @JoinColumn(name = "id_endereco")
     private Endereco endereco;
 
-
-    @OneToMany(mappedBy = "pedidos", cascade = CascadeType.ALL, orphanRemoval = false)
+    @OneToMany(mappedBy = "pedidos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoProduto> pedidoProduto = new ArrayList<>();
 
     private LocalDate data;

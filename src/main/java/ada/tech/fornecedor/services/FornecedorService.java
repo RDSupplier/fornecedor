@@ -7,10 +7,7 @@ import ada.tech.fornecedor.domain.mappers.EnderecoMapper;
 import ada.tech.fornecedor.domain.mappers.FornecedorMapper;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
 import ada.tech.fornecedor.domain.mappers.ProdutoMapper;
-import ada.tech.fornecedor.repositories.IEnderecoRepository;
-import ada.tech.fornecedor.repositories.IEstoqueRepository;
-import ada.tech.fornecedor.repositories.IFornecedorRepository;
-import ada.tech.fornecedor.repositories.IRoleRepository;
+import ada.tech.fornecedor.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,8 +22,12 @@ public class FornecedorService implements IFornecedorService {
     private final IFornecedorRepository repository;
     private final IEstoqueRepository estoqueRepository;
     private final IEnderecoRepository enderecoRepository;
+    private final IPedidoRepository pedidoRepository;
     private final IRoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+
+    private final ProdutoService produtoService;
+    private final PedidoService pedidoService;
 
 
     private Role criarRoleSeNaoExistir(String roleName) {
@@ -139,8 +140,25 @@ public class FornecedorService implements IFornecedorService {
     }
 
     @Override
+    @Transactional
     public void deletarFornecedor(int id) throws NotFoundException {
-        estoqueRepository.deleteById(id);
+        Fornecedor fornecedor = searchFornecedorById(id);
+        List<Estoque> estoques = fornecedor.getEstoques();
+
+        for (Estoque estoque : estoques) {
+            for (Produto produto : estoque.getProdutos()) {
+                for(PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
+                    Pedido pedido = pedidoProduto.getPedidos();
+                    pedido.setFornecedor(null);
+                    pedidoRepository.save(pedido);
+                }
+                removerPedidosAssociadosAoProduto(produto);
+                produtoService.deletarProduto(produto.getId());
+            }
+
+            estoqueRepository.deleteById(estoque.getId());
+        }
+
         repository.deleteById(id);
     }
 
@@ -191,5 +209,17 @@ public class FornecedorService implements IFornecedorService {
 
     public Fornecedor obterFornecedorEntidade(int id) {
         return repository.findById(id).orElse(null);
+    }
+
+    private void removerPedidosAssociadosAoProduto(Produto produto) {
+        for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
+            Pedido pedido = pedidoProduto.getPedidos();
+            pedido.getPedidoProduto().remove(pedidoProduto);
+        }
+    }
+
+    private void removerFornecedorDoPedido(Pedido pedido) {
+        pedido.setFornecedor(null);
+        pedidoRepository.save(pedido);
     }
 }

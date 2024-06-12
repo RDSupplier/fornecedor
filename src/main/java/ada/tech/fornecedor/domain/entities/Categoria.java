@@ -22,7 +22,7 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany
+    @ManyToMany()
     @JoinTable(
             name = "categoria_produto",
             joinColumns = @JoinColumn(name = "id_categoria"),

@@ -7,10 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Builder
 @Data
@@ -35,10 +33,10 @@ public class Produto {
     @JoinColumn(name = "id_fabricante")
     private Fabricante fabricante;
 
-    @OneToMany(mappedBy = "produtos")
+    @OneToMany(mappedBy = "produtos", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PedidoProduto> pedidoProduto = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "produtos", cascade = CascadeType.PERSIST)
+    @ManyToMany(mappedBy = "produtos", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Categoria> categorias = new ArrayList<>();
 
     @Size(max = 50, message = "O nome comercial do produto não pode exceder 50 caracteres")

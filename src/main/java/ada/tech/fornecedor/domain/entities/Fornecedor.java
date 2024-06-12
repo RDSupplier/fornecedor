@@ -26,7 +26,7 @@ public class Fornecedor {
     @JoinColumn(name = "id_endereco")
     private Endereco enderecos;
 
-    @OneToMany(mappedBy = "fornecedor")
+    @OneToMany(mappedBy = "fornecedor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Estoque> estoques = new ArrayList<>();
 
     @Size(max = 14, message = "O CNPJ do fornecedor não pode exceder 14 caracteres")
