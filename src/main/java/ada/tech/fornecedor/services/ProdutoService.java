@@ -67,19 +67,20 @@ public class ProdutoService implements IProdutoService{
 
     @Transactional
     public ProdutoDto atualizarProduto(int id, ProdutoDto produtoDto) throws NotFoundException {
-        final Produto produto = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException(Produto.class, String.valueOf(id)));
-
-        FabricanteDto fabricanteDto = produtoDto.getFabricante();
-        Fabricante fabricante = FabricanteMapper.toEntity(fabricanteDto);
-
+        Fabricante fabricante = FabricanteMapper.toEntity(produtoDto.getFabricante());
         Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
 
         if (fabricanteExistente != null) {
-            produto.setFabricante(fabricanteExistente);
+            fabricanteExistente.setNome(fabricante.getNome());
+            fabricanteExistente.setCnpj(fabricante.getCnpj());
+            fabricanteRepository.save(fabricanteExistente);
         } else {
-            throw new NotFoundException(Fabricante.class, String.valueOf(fabricanteDto));
+            fabricanteExistente = fabricanteRepository.save(fabricante);
         }
+
+        produtoDto.setFabricante(FabricanteMapper.toDto(fabricanteExistente));
+
+        final Produto produto = searchProdutoById(id);
 
         List <String> categoriaNomes = produtoDto.getCategorias().stream()
                 .map(CategoriaDto::getCategoria)
