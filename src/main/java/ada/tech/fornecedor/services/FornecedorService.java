@@ -107,6 +107,7 @@ public class FornecedorService implements IFornecedorService {
     @Transactional
     public FornecedorDto atualizarFornecedor(int id, FornecedorDto fornecedorDto) throws NotFoundException {
         Fornecedor fornecedor = FornecedorMapper.toEntity(fornecedorDto);
+        String senhaEncoded = passwordEncoder.encode(fornecedor.getSenha());
 
         Optional<Endereco> enderecoExistente = enderecoRepository.findById(fornecedorDto.getEndereco().getId());
 
@@ -130,7 +131,7 @@ public class FornecedorService implements IFornecedorService {
         fornecedorExistente.setCnpj(fornecedor.getCnpj());
         fornecedorExistente.setNire(fornecedor.getNire());
         fornecedorExistente.setNome(fornecedor.getNome());
-        fornecedorExistente.setSenha(fornecedor.getSenha());
+        fornecedorExistente.setSenha(senhaEncoded);
 
         fornecedorExistente.setEnderecos(endereco);
 
