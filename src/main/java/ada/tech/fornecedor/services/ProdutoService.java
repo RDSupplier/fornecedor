@@ -73,7 +73,7 @@ public class ProdutoService implements IProdutoService{
         if (fabricanteExistente != null) {
             fabricanteExistente.setNome(fabricante.getNome());
             fabricanteExistente.setCnpj(fabricante.getCnpj());
-            fabricanteRepository.save(fabricanteExistente);
+            fabricanteExistente = fabricanteRepository.save(fabricanteExistente);
         } else {
             fabricanteExistente = fabricanteRepository.save(fabricante);
         }
@@ -101,6 +101,7 @@ public class ProdutoService implements IProdutoService{
         produto.setCargaPerigosa(produtoDto.isCargaPerigosa());
         produto.setVolume(produtoDto.getVolume());
         produto.setCategorias(categoriasExistentes);
+        produto.setFabricante(fabricanteExistente);
 
         return ProdutoMapper.toDto(repository.save(produto));
     }
