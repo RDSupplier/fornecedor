@@ -10,6 +10,7 @@ public class FabricanteMapper {
         }
 
         return Fabricante.builder()
+                .id(dto.getId())
                 .nome(dto.getNome())
                 .cnpj(dto.getCnpj())
                 .build();
@@ -21,6 +22,7 @@ public class FabricanteMapper {
         }
 
         return FabricanteDto.builder()
+                .id(entity.getId())
                 .nome(entity.getNome())
                 .cnpj(entity.getCnpj())
                 .build();

@@ -31,8 +31,31 @@ public class ProdutoService implements IProdutoService{
     private final IFabricanteRepository fabricanteRepository;
     private final ICategoriaRepository categoriaRepository;
 
+    private final IFabricanteService fabricanteService;
+
     @PersistenceContext
     private final EntityManager entityManager;
+
+//    @Override
+//    @Transactional
+//    public ProdutoDto criarProduto(ProdutoDto produtoDto) throws NotFoundException {
+//        FabricanteDto fabricanteDto = produtoDto.getFabricante();
+//        FabricanteDto fabricanteExistente = fabricanteService.listarFabricante(fabricanteDto.getId());
+//
+//        if (fabricanteExistente == null || fabricanteExistente.getId() == 0) {
+//            throw new NotFoundException(Fabricante.class, "Fabricante não encontrado com o id: " + fabricanteDto.getId());
+//        }
+//
+////        produtoDto.setFabricante(fabricanteExistente);
+//
+//        Produto produto = ProdutoMapper.toEntity(produtoDto);
+//
+//        produto.setFabricante(FabricanteMapper.toEntity(produtoDto.getFabricante()));
+//
+//        produto = repository.save(produto);
+//
+//        return ProdutoMapper.toDto(produto);
+//    }
 
     @Override
     @Transactional
@@ -41,9 +64,6 @@ public class ProdutoService implements IProdutoService{
         Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
 
         if (fabricanteExistente != null) {
-            produtoDto.setFabricante(FabricanteMapper.toDto(fabricanteExistente));
-        } else {
-            fabricanteExistente = fabricanteRepository.save(fabricante);
             produtoDto.setFabricante(FabricanteMapper.toDto(fabricanteExistente));
         }
 
@@ -56,6 +76,8 @@ public class ProdutoService implements IProdutoService{
 
         return ProdutoMapper.toDto(produto);
     }
+
+
 
     public List<ProdutoDto> listarProdutos() {
         return repository.findAll().stream().map(ProdutoMapper::toDto).toList();
