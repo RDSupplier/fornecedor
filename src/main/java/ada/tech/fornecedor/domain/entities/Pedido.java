@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @Data
@@ -17,10 +19,28 @@ import java.time.LocalTime;
 @Table(name="tb_pedido")
 
 public class Pedido {
-    private LocalDate data;
-    private LocalTime horario;
-    private double total;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "id_fornecedor")
+    private Fornecedor fornecedor;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "id_endereco")
+    private Endereco endereco;
+
+    @OneToMany(mappedBy = "pedidos", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PedidoProduto> pedidoProduto = new ArrayList<>();
+
+    private LocalDate data;
+
+    private LocalTime horario;
+
+    @Column(precision = 10)
+    private double total;
+
+    @Column(name = "volume_total", precision = 10)
+    private double volumeTotal;
 }

@@ -1,25 +1,83 @@
 package ada.tech.fornecedor.services;
 
+import ada.tech.fornecedor.domain.dto.CategoriaDto;
+import ada.tech.fornecedor.domain.dto.FabricanteDto;
 import ada.tech.fornecedor.domain.dto.ProdutoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
-import ada.tech.fornecedor.domain.entities.Produto;
+import ada.tech.fornecedor.domain.entities.*;
+import ada.tech.fornecedor.domain.mappers.FabricanteMapper;
 import ada.tech.fornecedor.domain.mappers.ProdutoMapper;
+import ada.tech.fornecedor.repositories.ICategoriaRepository;
+import ada.tech.fornecedor.repositories.IFabricanteRepository;
 import ada.tech.fornecedor.repositories.IProdutoRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProdutoService implements IProdutoService{
 
     private final IProdutoRepository repository;
+    private final IFabricanteRepository fabricanteRepository;
+    private final ICategoriaRepository categoriaRepository;
 
-    public ProdutoDto criarProduto(ProdutoDto produtoDto) {
+    private final IFabricanteService fabricanteService;
+
+    @PersistenceContext
+    private final EntityManager entityManager;
+
+//    @Override
+//    @Transactional
+//    public ProdutoDto criarProduto(ProdutoDto produtoDto) throws NotFoundException {
+//        FabricanteDto fabricanteDto = produtoDto.getFabricante();
+//        FabricanteDto fabricanteExistente = fabricanteService.listarFabricante(fabricanteDto.getId());
+//
+//        if (fabricanteExistente == null || fabricanteExistente.getId() == 0) {
+//            throw new NotFoundException(Fabricante.class, "Fabricante não encontrado com o id: " + fabricanteDto.getId());
+//        }
+//
+////        produtoDto.setFabricante(fabricanteExistente);
+//
+//        Produto produto = ProdutoMapper.toEntity(produtoDto);
+//
+//        produto.setFabricante(FabricanteMapper.toEntity(produtoDto.getFabricante()));
+//
+//        produto = repository.save(produto);
+//
+//        return ProdutoMapper.toDto(produto);
+//    }
+
+    @Override
+    @Transactional
+    public ProdutoDto criarProduto(ProdutoDto produtoDto) throws NotFoundException {
+        Fabricante fabricante = FabricanteMapper.toEntity(produtoDto.getFabricante());
+        Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
+
+        if (fabricanteExistente != null) {
+            produtoDto.setFabricante(FabricanteMapper.toDto(fabricanteExistente));
+        }
+
         Produto produto = ProdutoMapper.toEntity(produtoDto);
-        return ProdutoMapper.toDto(repository.save(produto));
+        produto.setFabricante(fabricanteExistente);
+
+        adicionarCategorias(produto, produtoDto.getCategorias());
+
+        produto = repository.save(produto);
+
+        return ProdutoMapper.toDto(produto);
     }
+
+
 
     public List<ProdutoDto> listarProdutos() {
         return repository.findAll().stream().map(ProdutoMapper::toDto).toList();
@@ -29,23 +87,107 @@ public class ProdutoService implements IProdutoService{
         return ProdutoMapper.toDto(searchProdutoById(id));
     }
 
+    @Transactional
     public ProdutoDto atualizarProduto(int id, ProdutoDto produtoDto) throws NotFoundException {
-        final Produto produto = repository.findById(id).orElseThrow(() -> new NotFoundException(Produto.class, String.valueOf(id)));
+        Fabricante fabricante = FabricanteMapper.toEntity(produtoDto.getFabricante());
+        Fabricante fabricanteExistente = fabricanteRepository.findByCnpj(fabricante.getCnpj());
+
+        if (fabricanteExistente != null) {
+            fabricanteExistente.setNome(fabricante.getNome());
+            fabricanteExistente.setCnpj(fabricante.getCnpj());
+            fabricanteExistente = fabricanteRepository.save(fabricanteExistente);
+        } else {
+            fabricanteExistente = fabricanteRepository.save(fabricante);
+        }
+
+        produtoDto.setFabricante(FabricanteMapper.toDto(fabricanteExistente));
+
+        final Produto produto = searchProdutoById(id);
+
+        List<String> categoriaNomes = produtoDto.getCategorias().stream()
+                .map(CategoriaDto::getCategoria)
+                .collect(Collectors.toList());
+
+        List<Categoria> categoriasExistentes = categoriaRepository.findAllByCategoriaIn(categoriaNomes);
+
+        if (categoriasExistentes.size() != categoriaNomes.size()) {
+            throw new NotFoundException(Categoria.class, "Algumas categorias não foram encontradas.");
+        }
+
+        // Limpar as categorias antigas
+        for (Categoria categoria : produto.getCategorias()) {
+            categoria.getProdutos().remove(produto);
+        }
+        produto.getCategorias().clear();
+
+        // Adicionar as novas associações de categorias
+        for (Categoria categoria : categoriasExistentes) {
+            produto.getCategorias().add(categoria);
+            if (!categoria.getProdutos().contains(produto)) {
+                categoria.getProdutos().add(produto);
+            }
+        }
+
         produto.setNomeComercial(produtoDto.getNomeComercial());
         produto.setPrincipioAtivo(produtoDto.getPrincipioAtivo());
         produto.setApresentacao(produtoDto.getApresentacao());
-        produto.setLote(produtoDto.getLote());
-        produto.setDataFabricacao(produtoDto.getDataFabricacao());
-        produto.setFabricante(produtoDto.getFabricante());
-        produto.setFornecedor(produtoDto.getFornecedor());
+        produto.setCodigoBarras(produtoDto.getCodigoBarras());
+        produto.setImagem(produtoDto.getImagem());
         produto.setPreco(produtoDto.getPreco());
         produto.setCargaPerigosa(produtoDto.isCargaPerigosa());
         produto.setVolume(produtoDto.getVolume());
+        produto.setFabricante(fabricanteExistente);
+
         return ProdutoMapper.toDto(repository.save(produto));
     }
 
+
+
+
+    @Transactional
     public void deletarProduto(int id) throws NotFoundException {
-        repository.deleteById(id);
+        Produto produto = entityManager.find(Produto.class, id);
+        if (produto != null) {
+            removerCategorias(produto);
+            removerPedidos(produto);
+            entityManager.remove(produto);
+        } else {
+            throw new NotFoundException(Produto.class, String.valueOf(id));
+        }
+    }
+
+    private void adicionarCategorias(Produto produto, List<CategoriaDto> categoriaDtos) throws NotFoundException {
+        List<String> categoriaNomes = categoriaDtos.stream()
+                .map(CategoriaDto::getCategoria)
+                .collect(Collectors.toList());
+
+        List<Categoria> categoriasExistentes = categoriaRepository.findAllByCategoriaIn(categoriaNomes);
+
+        if (categoriasExistentes.size() != categoriaNomes.size()) {
+            throw new NotFoundException(Categoria.class, "Algumas categorias não foram encontradas.");
+        }
+
+        for(Categoria categoria : categoriasExistentes) {
+            categoria.getProdutos().add(produto);
+        }
+
+        produto.setCategorias(categoriasExistentes);
+    }
+
+    public void removerCategorias(Produto produto) {
+        for (Categoria categoria : produto.getCategorias()) {
+            categoria.getProdutos().remove(produto);
+        }
+        produto.getCategorias().clear();
+        entityManager.merge(produto);
+    }
+
+    public void removerPedidos(Produto produto) {
+        for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
+            Pedido pedido = pedidoProduto.getPedidos();
+            pedido.getPedidoProduto().remove(pedidoProduto);
+            pedidoProduto.setProdutos(null);
+        }
     }
 
     private Produto searchProdutoById(int id) throws NotFoundException {

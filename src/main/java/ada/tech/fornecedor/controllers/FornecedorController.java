@@ -1,9 +1,12 @@
 package ada.tech.fornecedor.controllers;
 
+import ada.tech.fornecedor.domain.dto.EstoqueDto;
 import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.services.IFornecedorService;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,16 +18,33 @@ import java.util.List;
 public class FornecedorController {
     private final IFornecedorService fornecedorService;
 
+    private final EstoqueController estoqueController;
+
     @Autowired
-    public FornecedorController(IFornecedorService fornecedorService){
+    public FornecedorController(IFornecedorService fornecedorService, EstoqueController estoqueController){
         this.fornecedorService = fornecedorService;
+        this.estoqueController = estoqueController;
     }
 
     @PostMapping
-    public ResponseEntity<FornecedorDto> criarFornecedor(
+    public ResponseEntity<?> criarFornecedor(
             @RequestBody FornecedorDto fornecedorDto
     ){
-        return ResponseEntity.status(HttpStatus.CREATED).body(fornecedorService.criarFornecedor(fornecedorDto));
+        try{
+            FornecedorDto fornecedor = fornecedorService.criarFornecedor(fornecedorDto);
+
+            EstoqueDto estoqueDto = new EstoqueDto();
+            estoqueController.criarEstoque(estoqueDto);
+            estoqueController.adicionarFornecedor(fornecedor.getId(), fornecedor.getId());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(fornecedor);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o fornecedor: violação de integridade de dados");
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o fornecedor: violação de restrição de dados");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
+        }
     }
 
     @GetMapping
@@ -39,16 +59,31 @@ public class FornecedorController {
         return ResponseEntity.ok(fornecedorService.listarFornecedor(id));
     }
 
+    @GetMapping("/{id}/pedidos")
+    public ResponseEntity<?> listarPedidos(
+            @PathVariable("id") int id
+    ) throws NotFoundException {
+        return ResponseEntity.ok(fornecedorService.listarPedidos(id));
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<FornecedorDto> atualizarFornecedor(
+    public ResponseEntity<?> atualizarFornecedor(
             @PathVariable("id") int id,
             @RequestBody FornecedorDto fornecedorDto
     ) throws NotFoundException {
-        final FornecedorDto fornecedor = fornecedorService.atualizarFornecedor(id, fornecedorDto);
-        if (fornecedor == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            final FornecedorDto fornecedor = fornecedorService.atualizarFornecedor(id, fornecedorDto);
+            if (fornecedor == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            return ResponseEntity.ok(fornecedor);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de integridade de dados");
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de restrição de dados");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
         }
-        return ResponseEntity.ok(fornecedor);
     }
 
     @DeleteMapping("/{id}")
@@ -58,4 +93,7 @@ public class FornecedorController {
         fornecedorService.deletarFornecedor(id);
         return ResponseEntity.noContent().build();
     }
+
+
+
 }
