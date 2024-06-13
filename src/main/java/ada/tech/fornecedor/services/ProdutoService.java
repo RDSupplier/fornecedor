@@ -104,14 +104,28 @@ public class ProdutoService implements IProdutoService{
 
         final Produto produto = searchProdutoById(id);
 
-        List <String> categoriaNomes = produtoDto.getCategorias().stream()
+        List<String> categoriaNomes = produtoDto.getCategorias().stream()
                 .map(CategoriaDto::getCategoria)
                 .collect(Collectors.toList());
 
-        List <Categoria> categoriasExistentes = categoriaRepository.findAllByCategoriaIn(categoriaNomes);
+        List<Categoria> categoriasExistentes = categoriaRepository.findAllByCategoriaIn(categoriaNomes);
 
         if (categoriasExistentes.size() != categoriaNomes.size()) {
             throw new NotFoundException(Categoria.class, "Algumas categorias não foram encontradas.");
+        }
+
+        // Limpar as categorias antigas
+        for (Categoria categoria : produto.getCategorias()) {
+            categoria.getProdutos().remove(produto);
+        }
+        produto.getCategorias().clear();
+
+        // Adicionar as novas associações de categorias
+        for (Categoria categoria : categoriasExistentes) {
+            produto.getCategorias().add(categoria);
+            if (!categoria.getProdutos().contains(produto)) {
+                categoria.getProdutos().add(produto);
+            }
         }
 
         produto.setNomeComercial(produtoDto.getNomeComercial());
@@ -122,11 +136,13 @@ public class ProdutoService implements IProdutoService{
         produto.setPreco(produtoDto.getPreco());
         produto.setCargaPerigosa(produtoDto.isCargaPerigosa());
         produto.setVolume(produtoDto.getVolume());
-        produto.setCategorias(categoriasExistentes);
         produto.setFabricante(fabricanteExistente);
 
         return ProdutoMapper.toDto(repository.save(produto));
     }
+
+
+
 
     @Transactional
     public void deletarProduto(int id) throws NotFoundException {
