@@ -9,7 +9,7 @@
 
 **Proposta**<br/>
 
-Através do sistema será possível um fornecedor realizar seu cadastro/login na plataforma. Os fornecedores poderão cadastrar seus próprios produtos, assim como realizar edições e excluções.<br/>
+Através do sistema será possível um fornecedor realizar seu cadastro/login na plataforma. Os fornecedores poderão cadastrar seus próprios produtos, assim como realizar edições e exclusões.<br/>
 Os fornecedores também poderão alterar seus próprios dados, além de consultar todos os pedidos que foram feitos para ele.<br/>
 O sistema também possui um usuário admin interno, onde é possível consultar todos os fornecedores que estão cadastrados, seus pedidos, etc.
 
