@@ -36,27 +36,6 @@ public class ProdutoService implements IProdutoService{
     @PersistenceContext
     private final EntityManager entityManager;
 
-//    @Override
-//    @Transactional
-//    public ProdutoDto criarProduto(ProdutoDto produtoDto) throws NotFoundException {
-//        FabricanteDto fabricanteDto = produtoDto.getFabricante();
-//        FabricanteDto fabricanteExistente = fabricanteService.listarFabricante(fabricanteDto.getId());
-//
-//        if (fabricanteExistente == null || fabricanteExistente.getId() == 0) {
-//            throw new NotFoundException(Fabricante.class, "Fabricante não encontrado com o id: " + fabricanteDto.getId());
-//        }
-//
-////        produtoDto.setFabricante(fabricanteExistente);
-//
-//        Produto produto = ProdutoMapper.toEntity(produtoDto);
-//
-//        produto.setFabricante(FabricanteMapper.toEntity(produtoDto.getFabricante()));
-//
-//        produto = repository.save(produto);
-//
-//        return ProdutoMapper.toDto(produto);
-//    }
-
     @Override
     @Transactional
     public ProdutoDto criarProduto(ProdutoDto produtoDto) throws NotFoundException {
@@ -114,13 +93,11 @@ public class ProdutoService implements IProdutoService{
             throw new NotFoundException(Categoria.class, "Algumas categorias não foram encontradas.");
         }
 
-        // Limpar as categorias antigas
         for (Categoria categoria : produto.getCategorias()) {
             categoria.getProdutos().remove(produto);
         }
         produto.getCategorias().clear();
 
-        // Adicionar as novas associações de categorias
         for (Categoria categoria : categoriasExistentes) {
             produto.getCategorias().add(categoria);
             if (!categoria.getProdutos().contains(produto)) {
@@ -140,9 +117,6 @@ public class ProdutoService implements IProdutoService{
 
         return ProdutoMapper.toDto(repository.save(produto));
     }
-
-
-
 
     @Transactional
     public void deletarProduto(int id) throws NotFoundException {

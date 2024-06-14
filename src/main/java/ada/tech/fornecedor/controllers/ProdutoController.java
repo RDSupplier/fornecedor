@@ -27,15 +27,15 @@ public class ProdutoController {
     public ResponseEntity<?> criarProduto(
             @RequestBody ProdutoDto produtoDto
     ) throws NotFoundException {
-//        try {
+        try {
             return ResponseEntity.status(HttpStatus.CREATED).body(produtoService.criarProduto(produtoDto));
-//        } catch (DataIntegrityViolationException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o produto: violação de integridade de dados");
-//        } catch (ConstraintViolationException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o produto: violação de restrição de dados");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
-//        }
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o produto: violação de integridade de dados");
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar o produto: violação de restrição de dados");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
+        }
     }
 
     @GetMapping
