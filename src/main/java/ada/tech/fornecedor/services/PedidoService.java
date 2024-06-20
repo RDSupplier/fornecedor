@@ -108,8 +108,6 @@ public class PedidoService implements IPedidoService {
         return PedidoMapper.toDto(pedidoSalvo);
     }
 
-
-
     @Override
     public List<PedidoDto> listarPedidos() {
         return repository.findAll().stream().map(PedidoMapper::toDto).toList();

@@ -94,6 +94,24 @@ public class FornecedorController {
         return ResponseEntity.noContent().build();
     }
 
-
-
+    @PatchMapping("/redefinir-senha")
+    public ResponseEntity<?> redefinirSenha(
+            @RequestParam String email,
+            @RequestHeader String otp,
+            @RequestBody String novaSenha
+    ) {
+        try {
+            return ResponseEntity.ok(fornecedorService.redefinirSenha(email, otp, novaSenha));
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de integridade de dados");
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de restrição de dados");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de confirmação inválido");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível encontrar o usuário com email: " + email);
+        }
+    }
 }

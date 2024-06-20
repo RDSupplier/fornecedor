@@ -19,4 +19,8 @@ public interface IFornecedorService {
     LoginResponse loginFornecedor(LoginDto loginDto);
 
     Fornecedor obterFornecedorEntidade(int id);
+
+    String recuperarSenha(String email) throws NotFoundException;
+
+    FornecedorDto redefinirSenha(String email, String otp, String senha);
 }

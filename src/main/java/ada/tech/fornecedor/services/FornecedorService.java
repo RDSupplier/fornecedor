@@ -8,12 +8,17 @@ import ada.tech.fornecedor.domain.mappers.FornecedorMapper;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
 import ada.tech.fornecedor.domain.mappers.ProdutoMapper;
 import ada.tech.fornecedor.repositories.*;
+import ada.tech.fornecedor.util.EmailUtil;
+import ada.tech.fornecedor.util.OtpUtil;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.Normalizer;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -30,6 +35,10 @@ public class FornecedorService implements IFornecedorService {
     private final ProdutoService produtoService;
     private final PedidoService pedidoService;
 
+    private final EmailUtil emailUtil;
+
+    @Autowired
+    private final OtpUtil otpUtil;
 
     private Role criarRoleSeNaoExistir(String roleName) {
         Role role = roleRepository.findByName(roleName);
@@ -51,6 +60,8 @@ public class FornecedorService implements IFornecedorService {
         String senhaEncoded = passwordEncoder.encode(fornecedorDto.getSenha());
         fornecedor.setRole(roleFornecedor);
         fornecedor.setSenha(senhaEncoded);
+        fornecedor.setOtp(null);
+        fornecedor.setOtpHorarioGerado(LocalDateTime.now());
         fornecedor = repository.save(fornecedor);
         return FornecedorMapper.toDto(fornecedor);
     }
@@ -255,5 +266,33 @@ public class FornecedorService implements IFornecedorService {
 
     public Fornecedor obterFornecedorEntidade(int id) {
         return repository.findById(id).orElse(null);
+    }
+
+    public String recuperarSenha(String email) throws NotFoundException {
+        Fornecedor fornecedor = repository.findByEmail(email).orElseThrow(
+                () -> new RuntimeException("Não foi possível encontrar o usuário com email: " + email));
+
+        try {
+            String otp = otpUtil.generateOtp();
+            fornecedor.setOtp(otp);
+            fornecedor.setOtpHorarioGerado(LocalDateTime.now());
+            repository.save(fornecedor);
+            emailUtil.sendOtpEmail(email, otp);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Não foi possível enviar o email para redefinição de senha");
+        }
+        return "Verifique seu email para a redefinição de senha";
+    }
+
+    public FornecedorDto redefinirSenha(String email, String otp, String senha) {
+        Fornecedor fornecedor = repository.findByEmail(email).orElseThrow(
+                () -> new RuntimeException("Não foi possível encontrar o usuário com email: " + email));
+        if(fornecedor.getOtp().equals(otp)) {
+            String senhaEncoded = passwordEncoder.encode(senha);
+            fornecedor.setSenha(senhaEncoded);
+            return FornecedorMapper.toDto(repository.save(fornecedor));
+        } else {
+            throw new IllegalArgumentException("Código de confirmação inválido");
+        }
     }
 }

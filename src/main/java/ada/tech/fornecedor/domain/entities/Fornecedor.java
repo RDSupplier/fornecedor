@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,10 @@ public class Fornecedor {
     private String nome;
 
     private String senha;
+
+    private String otp;
+
+    private LocalDateTime otpHorarioGerado;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
