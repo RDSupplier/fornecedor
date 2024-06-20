@@ -15,6 +15,7 @@ public class PedidoMapper {
                 .horario(dto.getHorario())
                 .total(dto.getTotal())
                 .volumeTotal(dto.getVolumeTotal())
+                .status(dto.getStatus())
                 .build();
     }
 
@@ -29,6 +30,7 @@ public class PedidoMapper {
                 .produtos(entity.getPedidoProduto().stream()
                         .map(PedidoMapper::toPedidoProdutoDto)
                         .collect(Collectors.toList()))
+                .status(entity.getStatus())
                 .build();
 
         EnderecoDto enderecoDto = new EnderecoDto();

@@ -1,10 +1,12 @@
 package ada.tech.fornecedor.services;
 
 import ada.tech.fornecedor.domain.dto.EstoqueDto;
+import ada.tech.fornecedor.domain.dto.EstoqueProdutoDto;
 import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.*;
+import ada.tech.fornecedor.repositories.IEstoqueProdutoRepository;
 import ada.tech.fornecedor.repositories.IEstoqueRepository;
 import ada.tech.fornecedor.repositories.IFornecedorRepository;
 import ada.tech.fornecedor.repositories.IProdutoRepository;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class EstoqueService implements IEstoqueService {
 
     private final IEstoqueRepository repository;
+    private final IEstoqueProdutoRepository estoqueProdutoRepository;
     private final IFornecedorRepository fornecedorRepository;
     private final IProdutoRepository produtoRepository;
 
@@ -34,7 +37,6 @@ public class EstoqueService implements IEstoqueService {
 
         return EstoqueMapper.toDto(estoque);
     }
-
 
     @Override
     public List<EstoqueDto> listarEstoques() {
@@ -59,29 +61,23 @@ public class EstoqueService implements IEstoqueService {
 
     @Override
     @Transactional
-    public EstoqueDto adicionarProduto(int estoqueId, int produtoId) throws NotFoundException {
+    public EstoqueDto adicionarProduto(int estoqueId, EstoqueProdutoDto estoqueProdutoDto) throws NotFoundException {
         Estoque estoque = searchEstoqueById(estoqueId);
 
-        if (produtoId <= 0) {
-            throw new IllegalArgumentException("O id do produto não pode ser <= 0>");
+        Produto produto = produtoRepository.findById(estoqueProdutoDto.getProdutoDto().getId())
+                .orElseThrow(() -> new NotFoundException(Produto.class, "ID: " + estoqueProdutoDto.getProdutoDto().getId()));
+
+        EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
+
+        if (estoqueProduto == null) {
+            estoqueProduto = EstoqueProdutoMapper.toEntity(estoqueProdutoDto);
+            estoqueProduto.setEstoque(estoque);
+            estoqueProduto.setProduto(produto);
+        } else {
+            estoqueProduto.setQuantidade(estoqueProdutoDto.getQuantidade());
         }
 
-        Optional<Produto> produtoExistente = produtoRepository.findById(produtoId);
-        if (!produtoExistente.isPresent()) {
-            throw new NotFoundException(Produto.class, "ID: " + produtoId);
-        }
-
-        Produto produto = produtoExistente.get();
-
-        if(estoque.getProdutos().contains(produto)) {
-            throw new IllegalArgumentException("O produto já está associado a este estoque");
-        }
-
-        estoque.getProdutos().add(produto);
-        estoque = repository.save(estoque);
-
-        produto.getEstoques().add(estoque);
-        produtoRepository.save(produto);
+        estoqueProdutoRepository.save(estoqueProduto);
 
         return EstoqueMapper.toDto(estoque);
     }

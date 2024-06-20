@@ -1,9 +1,11 @@
 package ada.tech.fornecedor.domain.mappers;
 
 import ada.tech.fornecedor.domain.dto.EstoqueDto;
+import ada.tech.fornecedor.domain.dto.EstoqueProdutoDto;
 import ada.tech.fornecedor.domain.dto.FornecedorDto;
 import ada.tech.fornecedor.domain.dto.ProdutoDto;
 import ada.tech.fornecedor.domain.entities.Estoque;
+import ada.tech.fornecedor.domain.entities.EstoqueProduto;
 import ada.tech.fornecedor.domain.entities.Fornecedor;
 import ada.tech.fornecedor.domain.entities.Produto;
 
@@ -14,32 +16,46 @@ import java.util.stream.Collectors;
 
 public class EstoqueMapper {
     public static Estoque toEntity(EstoqueDto dto) {
+        if(dto == null) {
+            return null;
+        }
+
         Fornecedor fornecedor = FornecedorMapper.toEntity(dto.getFornecedor());
 
-        List<Produto> produtos = dto.getProdutos() != null ? dto.getProdutos()
+        List<EstoqueProduto> estoqueProdutos = dto.getEstoqueProdutos() != null ? dto.getEstoqueProdutos()
                 .stream()
-                .map(ProdutoMapper::toEntity)
+                .map(EstoqueProdutoMapper::toEntity)
                 .collect(Collectors.toList()) : Collections.emptyList();
 
-        return Estoque.builder()
+        Estoque estoque = Estoque.builder()
                 .id(dto.getId())
                 .fornecedor(fornecedor)
-                .produtos(produtos)
+                .estoqueProdutos(estoqueProdutos)
                 .build();
+
+        for(EstoqueProduto estoqueProduto : estoqueProdutos) {
+            estoqueProduto.setEstoque(estoque);
+        }
+
+        return estoque;
     }
 
     public static EstoqueDto toDto(Estoque entity) {
+        if(entity == null) {
+            return null;
+        }
+
         FornecedorDto fornecedor = FornecedorMapper.toDto(entity.getFornecedor());
 
-        List<ProdutoDto> produtos = entity.getProdutos() != null ? entity.getProdutos()
+        List<EstoqueProdutoDto> estoqueProdutoDtos = entity.getEstoqueProdutos() != null ? entity.getEstoqueProdutos()
                 .stream()
-                .map(ProdutoMapper::toDto)
+                .map(EstoqueProdutoMapper::toDto)
                 .collect(Collectors.toList()) : Collections.emptyList();
 
-            return EstoqueDto.builder()
+        return EstoqueDto.builder()
             .id(entity.getId())
             .fornecedor(fornecedor)
-            .produtos(produtos)
+            .estoqueProdutos(estoqueProdutoDtos)
             .build();
     }
 }

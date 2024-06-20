@@ -90,6 +90,7 @@ public class PedidoService implements IPedidoService {
 
         pedido.setTotal(totalPedido);
         pedido.setVolumeTotal(volumeTotalProduto);
+        pedido.setStatus(pedidoDto.getStatus());
 
         Pedido pedidoSalvo = repository.save(pedido);
 
@@ -121,6 +122,8 @@ public class PedidoService implements IPedidoService {
         pedido.setData(pedidoDto.getData());
         pedido.setHorario(pedidoDto.getHorario());
         pedido.setTotal(pedidoDto.getTotal());
+        pedido.setStatus(pedidoDto.getStatus());
+        pedido.setVolumeTotal(pedidoDto.getVolumeTotal());
         return PedidoMapper.toDto(repository.save(pedido));
     }
 

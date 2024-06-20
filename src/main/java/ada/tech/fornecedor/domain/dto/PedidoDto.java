@@ -1,6 +1,8 @@
 package ada.tech.fornecedor.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -37,6 +39,10 @@ public class PedidoDto {
     @Positive
     @NotNull
     private double volumeTotal;
+
+    @NotEmpty
+    @NotBlank
+    private String status;
 
     private List<PedidoProdutoDto> produtos;
 }

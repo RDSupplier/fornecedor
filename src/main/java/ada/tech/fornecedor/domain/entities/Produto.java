@@ -21,13 +21,8 @@ public class Produto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany
-    @JoinTable(
-            name = "produto_estoque",
-            joinColumns = @JoinColumn(name = "id_produto"),
-            inverseJoinColumns = @JoinColumn(name = "id_estoque")
-    )
-    private List<Estoque> estoques;
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EstoqueProduto> estoqueProdutos = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_fabricante")
@@ -50,7 +45,6 @@ public class Produto {
     @Size(max = 100, message = "A apresentação do produto não pode exceder 100 caracteres")
     @Column(name = "apresentacao", length = 100)
     private String apresentacao;
-
 
     @Column(precision = 10)
     private double preco;

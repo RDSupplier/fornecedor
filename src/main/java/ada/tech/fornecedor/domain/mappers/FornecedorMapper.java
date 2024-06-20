@@ -16,6 +16,7 @@ public class FornecedorMapper {
 
         return Fornecedor.builder()
                 .cnpj(dto.getCnpj())
+                .email(dto.getEmail())
                 .nome(dto.getNome())
                 .senha(dto.getSenha())
                 .nire(dto.getNire())
@@ -32,6 +33,7 @@ public class FornecedorMapper {
 
         return FornecedorDto.builder()
                 .cnpj(entity.getCnpj())
+                .email(entity.getEmail())
                 .nome(entity.getNome())
                 .senha(entity.getSenha())
                 .nire(entity.getNire())

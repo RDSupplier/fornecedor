@@ -37,6 +37,8 @@ public class Fornecedor {
     @Column(length = 11, unique = true)
     private long nire;
 
+    private String email;
+
     @Column(length = 50)
     private String nome;
 

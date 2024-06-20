@@ -89,7 +89,7 @@ public class FornecedorController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarFornecedor(
             @PathVariable("id") int id
-    ) throws NotFoundException {
+    ) throws NotFoundException, Exception {
         fornecedorService.deletarFornecedor(id);
         return ResponseEntity.noContent().build();
     }

@@ -5,6 +5,10 @@ import ada.tech.fornecedor.domain.entities.Endereco;
 
 public class EnderecoMapper {
     public static Endereco toEntity(EnderecoDto dto) {
+        if(dto == null) {
+            return null;
+        }
+
         return Endereco.builder()
                 .id(dto.getId())
                 .rua(dto.getRua())
@@ -18,6 +22,10 @@ public class EnderecoMapper {
     }
 
     public static EnderecoDto toDto(Endereco entity) {
+        if(entity == null) {
+            return null;
+        }
+
         return EnderecoDto.builder()
                 .id(entity.getId())
                 .rua(entity.getRua())

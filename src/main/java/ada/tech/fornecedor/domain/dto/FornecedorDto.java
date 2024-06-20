@@ -31,6 +31,10 @@ public class FornecedorDto {
 
     @NotBlank
     @NotEmpty
+    private String email;
+
+    @NotBlank
+    @NotEmpty
     @Size(max = 50, message = "O nome do fornecedor não pode exceder 50 caracteres")
     private String nome;
 

@@ -15,7 +15,7 @@ public interface IFornecedorService {
     FornecedorDto listarFornecedor(int id) throws NotFoundException;
     List<PedidoDto> listarPedidos(int id) throws NotFoundException;
     FornecedorDto atualizarFornecedor(int id, FornecedorDto fornecedor) throws NotFoundException;
-    void deletarFornecedor(int id) throws NotFoundException;
+    void deletarFornecedor(int id) throws NotFoundException, Exception;
     LoginResponse loginFornecedor(LoginDto loginDto);
 
     Fornecedor obterFornecedorEntidade(int id);

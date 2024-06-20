@@ -1,6 +1,7 @@
 package ada.tech.fornecedor.domain.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,6 +38,9 @@ public class Pedido {
     private LocalDate data;
 
     private LocalTime horario;
+
+//    @Size(max = 13, message = "O status do pedido não pode exceder 13 caracteres")
+    private String status;
 
     @Column(precision = 10)
     private double total;

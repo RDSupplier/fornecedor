@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.util.*;
 
 @Service
@@ -76,20 +77,21 @@ public class FornecedorService implements IFornecedorService {
 
         Map<Integer, PedidoDto> pedidosPorId = new HashMap<>();
 
-        for (Produto produto : estoque.getProdutos()) {
+        for (EstoqueProduto estoqueProduto : estoque.getEstoqueProdutos()) {
+            Produto produto = estoqueProduto.getProduto();
+
             for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
                 Pedido pedido = pedidoProduto.getPedidos();
 
                 if (pedido.getFornecedor().getId() == fornecedor.getId()) {
-                    PedidoDto pedidoDto = pedidosPorId.getOrDefault(pedido.getId(), PedidoMapper.toDto(pedido));
+                    PedidoDto pedidoDto = pedidosPorId.computeIfAbsent(pedido.getId(), k -> PedidoMapper.toDto(pedido));
 
                     PedidoProdutoDto pedidoProdutoDto = new PedidoProdutoDto();
                     pedidoProdutoDto.setProduto(ProdutoMapper.toDto(produto));
                     pedidoProdutoDto.setQuantidade(pedidoProduto.getQuantidade());
 
-                    boolean produtoJaAdicionado = pedidoDto.getProdutos().stream().anyMatch(p ->
-                            p.getProduto().getId() == produto.getId() &&
-                                    p.getId() == pedidoProduto.getId());
+                    boolean produtoJaAdicionado = pedidoDto.getProdutos().stream()
+                            .anyMatch(pp -> pp.getProduto().getId() == produto.getId());
 
                     if (!produtoJaAdicionado) {
                         pedidoDto.getProdutos().add(pedidoProdutoDto);
@@ -130,6 +132,7 @@ public class FornecedorService implements IFornecedorService {
 
         fornecedorExistente.setCnpj(fornecedor.getCnpj());
         fornecedorExistente.setNire(fornecedor.getNire());
+        fornecedorExistente.setEmail(fornecedor.getEmail());
         fornecedorExistente.setNome(fornecedor.getNome());
         fornecedorExistente.setSenha(senhaEncoded);
 
@@ -144,16 +147,57 @@ public class FornecedorService implements IFornecedorService {
     @Transactional
     public void deletarFornecedor(int id) throws NotFoundException {
         Fornecedor fornecedor = searchFornecedorById(id);
-        List<Estoque> estoques = fornecedor.getEstoques();
 
-        for (Estoque estoque : estoques) {
-            for (Produto produto : estoque.getProdutos()) {
-                for(PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
+        boolean temPedidosPendentes = false;
+
+        for (Estoque estoque : fornecedor.getEstoques()) {
+            for (EstoqueProduto estoqueProduto : estoque.getEstoqueProdutos()) {
+                Produto produto = estoqueProduto.getProduto();
+
+                for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
                     Pedido pedido = pedidoProduto.getPedidos();
-                    pedido.setFornecedor(null);
-                    pedidoRepository.save(pedido);
+
+                    if (pedido.getStatus().equalsIgnoreCase("Em Separação") ||
+                            pedido.getStatus().equalsIgnoreCase("Em separacao") ||
+                            pedido.getStatus().equalsIgnoreCase("Em Transporte")) {
+                        temPedidosPendentes = true;
+                        break;
+                    }
+
+                    if (pedido.getStatus().equalsIgnoreCase("Pendente")) {
+                        pedido.setStatus("Recusado");
+                        pedidoRepository.save(pedido);
+                    }
                 }
-                removerPedidosAssociadosAoProduto(produto);
+
+                if (temPedidosPendentes) {
+                    break;
+                }
+            }
+
+            if (temPedidosPendentes) {
+                break;
+            }
+        }
+
+        if (temPedidosPendentes) {
+            throw new IllegalArgumentException("Fornecedores que possuem pedidos pendentes não podem excluir sua conta.");
+        }
+
+        for (Estoque estoque : fornecedor.getEstoques()) {
+            for (EstoqueProduto estoqueProduto : estoque.getEstoqueProdutos()) {
+                Produto produto = estoqueProduto.getProduto();
+
+                for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
+                    Pedido pedido = pedidoProduto.getPedidos();
+                    if (pedido.getFornecedor() != null && pedido.getFornecedor().getId() == fornecedor.getId()) {
+                        pedido.setFornecedor(null);
+                        pedidoRepository.save(pedido);
+                    }
+                }
+
+                produto.getPedidoProduto().clear();
+
                 produtoService.deletarProduto(produto.getId());
             }
 
@@ -196,10 +240,11 @@ public class FornecedorService implements IFornecedorService {
     }
 
     private boolean isPedidoAAssociatedWithFornecedor(Pedido pedido, Fornecedor fornecedor) {
-        for(PedidoProduto pedidoProduto : pedido.getPedidoProduto()) {
+        for (PedidoProduto pedidoProduto : pedido.getPedidoProduto()) {
             Produto produto = pedidoProduto.getProdutos();
-            for(Estoque estoque : produto.getEstoques()) {
-                if(estoque.getFornecedor().getId() == fornecedor.getId()) {
+
+            for (EstoqueProduto estoqueProduto : produto.getEstoqueProdutos()) {
+                if (estoqueProduto.getEstoque().getFornecedor().getId() == fornecedor.getId()) {
                     return true;
                 }
             }
@@ -210,17 +255,5 @@ public class FornecedorService implements IFornecedorService {
 
     public Fornecedor obterFornecedorEntidade(int id) {
         return repository.findById(id).orElse(null);
-    }
-
-    private void removerPedidosAssociadosAoProduto(Produto produto) {
-        for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
-            Pedido pedido = pedidoProduto.getPedidos();
-            pedido.getPedidoProduto().remove(pedidoProduto);
-        }
-    }
-
-    private void removerFornecedorDoPedido(Pedido pedido) {
-        pedido.setFornecedor(null);
-        pedidoRepository.save(pedido);
     }
 }
