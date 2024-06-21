@@ -106,12 +106,12 @@ public class FornecedorController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de integridade de dados");
         } catch (ConstraintViolationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de restrição de dados");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno ao processar a requisição");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de confirmação inválido");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível encontrar o usuário com email: " + email);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Código de confirmação expirado. Por favor, solicite um novo código");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível encontrar o fornecedor com o email: " + email);
         }
     }
 }

@@ -71,8 +71,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de integridade de dados");
         } catch (ConstraintViolationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de restrição de dados");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possível encontrar o fornecedor com o email: " + email);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Fornecedor não encontrado para o email: " + email);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Não foi possível enviar o email para redefinição de senha");
         }
     }
 }

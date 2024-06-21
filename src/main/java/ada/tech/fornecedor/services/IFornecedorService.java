@@ -22,5 +22,5 @@ public interface IFornecedorService {
 
     String recuperarSenha(String email) throws NotFoundException;
 
-    FornecedorDto redefinirSenha(String email, String otp, String senha);
+    FornecedorDto redefinirSenha(String email, String otp, String senha) throws NotFoundException;
 }
