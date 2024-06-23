@@ -59,6 +59,13 @@ public class FornecedorController {
         return ResponseEntity.ok(fornecedorService.listarFornecedor(id));
     }
 
+    @GetMapping("/email/{email}")
+    public ResponseEntity<FornecedorDto> listarFornecedor(
+            @PathVariable("email") String email
+    )  throws NotFoundException {
+        return ResponseEntity.ok(fornecedorService.listarFornecedor(email));
+    }
+
     @GetMapping("/{id}/pedidos")
     public ResponseEntity<?> listarPedidos(
             @PathVariable("id") int id
@@ -94,14 +101,21 @@ public class FornecedorController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/verificar-otp")
+    public ResponseEntity<?> isOtpCorrect(
+            @RequestParam String email,
+            @RequestParam String otp
+    ) throws NotFoundException {
+        return ResponseEntity.ok(fornecedorService.isOtpCorrect(email, otp));
+    }
+
     @PatchMapping("/redefinir-senha")
     public ResponseEntity<?> redefinirSenha(
             @RequestParam String email,
-            @RequestHeader String otp,
             @RequestBody String novaSenha
     ) {
         try {
-            return ResponseEntity.ok(fornecedorService.redefinirSenha(email, otp, novaSenha));
+            return ResponseEntity.ok(fornecedorService.redefinirSenha(email, novaSenha));
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao editar o fornecedor: violação de integridade de dados");
         } catch (ConstraintViolationException e) {

@@ -13,6 +13,7 @@ public interface IFornecedorService {
     FornecedorDto criarFornecedor(FornecedorDto fornecedor);
     List<FornecedorDto> listarFornecedores();
     FornecedorDto listarFornecedor(int id) throws NotFoundException;
+    FornecedorDto listarFornecedor(String email) throws NotFoundException;
     List<PedidoDto> listarPedidos(int id) throws NotFoundException;
     FornecedorDto atualizarFornecedor(int id, FornecedorDto fornecedor) throws NotFoundException;
     void deletarFornecedor(int id) throws NotFoundException, Exception;
@@ -22,5 +23,7 @@ public interface IFornecedorService {
 
     String recuperarSenha(String email) throws NotFoundException;
 
-    FornecedorDto redefinirSenha(String email, String otp, String senha) throws NotFoundException;
+    boolean isOtpCorrect(String email, String otp) throws NotFoundException;
+
+    FornecedorDto redefinirSenha(String email, String senha) throws NotFoundException;
 }

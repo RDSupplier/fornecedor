@@ -81,6 +81,11 @@ public class FornecedorService implements IFornecedorService {
     }
 
     @Override
+    public FornecedorDto listarFornecedor(String email) throws NotFoundException {
+        return FornecedorMapper.toDto(searchFornecedorByEmail(email));
+    }
+
+    @Override
     public List<PedidoDto> listarPedidos(int id) throws NotFoundException {
         Fornecedor fornecedor = searchFornecedorById(id);
 
@@ -226,6 +231,10 @@ public class FornecedorService implements IFornecedorService {
         return repository.findById(id).orElseThrow(() -> new NotFoundException(Fornecedor.class, String.valueOf(id)));
     }
 
+    private Fornecedor searchFornecedorByEmail(String email) throws NotFoundException {
+        return repository.findByEmail(email).orElseThrow(() -> new NotFoundException(Fornecedor.class, String.valueOf(email)));
+    }
+
     private Endereco verificarEndereco(EnderecoDto enderecoDto) {
         Endereco endereco = EnderecoMapper.toEntity(enderecoDto);
 
@@ -288,9 +297,8 @@ public class FornecedorService implements IFornecedorService {
         return "Verifique seu email para a redefinição de senha";
     }
 
-    public FornecedorDto redefinirSenha(String email, String otp, String senha) throws NotFoundException {
-        Fornecedor fornecedor = repository.findByEmail(email).orElseThrow(
-                () -> new NotFoundException(Fornecedor.class, String.valueOf(email)));
+    public boolean isOtpCorrect(String email, String otp) throws NotFoundException {
+        Fornecedor fornecedor = searchFornecedorByEmail(email);
 
         if(fornecedor.getOtpHorarioGerado() == null) {
             throw new IllegalArgumentException("Código de confirmação inválido");
@@ -299,17 +307,22 @@ public class FornecedorService implements IFornecedorService {
             fornecedor.setOtpHorarioGerado(null);
             repository.save(fornecedor);
             throw new RuntimeException("Código de confirmação expirado. Por favor, solicite um novo código.");
+        } else if(fornecedor.getOtp().equals(otp)) {
+            return true;
         }
 
-        if(fornecedor.getOtp().equals(otp)) {
-            String senhaEncoded = passwordEncoder.encode(senha);
-            fornecedor.setSenha(senhaEncoded);
-            fornecedor.setOtp(null);
-            fornecedor.setOtpHorarioGerado(null);
-            return FornecedorMapper.toDto(repository.save(fornecedor));
-        } else {
-            throw new IllegalArgumentException("Código de confirmação inválido");
-        }
+        throw new IllegalArgumentException("Código de confirmação inválido");
+    }
+
+    public FornecedorDto redefinirSenha(String email, String senha) throws NotFoundException {
+        Fornecedor fornecedor = repository.findByEmail(email).orElseThrow(
+                () -> new NotFoundException(Fornecedor.class, String.valueOf(email)));
+
+        String senhaEncoded = passwordEncoder.encode(senha);
+        fornecedor.setSenha(senhaEncoded);
+        fornecedor.setOtp(null);
+        fornecedor.setOtpHorarioGerado(null);
+        return FornecedorMapper.toDto(repository.save(fornecedor));
     }
 
     public boolean isOtpValid(LocalDateTime otpHorarioGerado) {
