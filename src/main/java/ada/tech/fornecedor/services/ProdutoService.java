@@ -114,6 +114,7 @@ public class ProdutoService implements IProdutoService{
         produto.setCargaPerigosa(produtoDto.isCargaPerigosa());
         produto.setVolume(produtoDto.getVolume());
         produto.setFabricante(fabricanteExistente);
+        produto.setAtivo(produto.isAtivo());
 
         return ProdutoMapper.toDto(repository.save(produto));
     }

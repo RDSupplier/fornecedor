@@ -60,4 +60,6 @@ public class Produto {
     @Column(name = "codigo_barras", length = 13)
     @Size(max = 13, message = "O código de barras não exceder 13 caracteres")
     private String codigoBarras;
+
+    private boolean ativo;
 }

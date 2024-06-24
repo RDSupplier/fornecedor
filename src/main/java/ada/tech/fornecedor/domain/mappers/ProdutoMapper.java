@@ -28,6 +28,7 @@ public class ProdutoMapper {
                 .volume(dto.getVolume())
                 .imagem(dto.getImagem())
                 .codigoBarras(dto.getCodigoBarras())
+                .ativo(dto.isAtivo())
                 .build();
     }
 
@@ -50,6 +51,7 @@ public class ProdutoMapper {
                 .volume(entity.getVolume())
                 .imagem(entity.getImagem())
                 .codigoBarras(entity.getCodigoBarras())
+                .ativo(entity.isAtivo())
                 .build();
     }
 
