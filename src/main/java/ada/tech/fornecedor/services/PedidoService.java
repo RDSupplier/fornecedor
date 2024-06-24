@@ -43,6 +43,7 @@ public class PedidoService implements IPedidoService {
         List<PedidoProduto> pedidoProdutos = new ArrayList<>();
         pedido.setData(LocalDate.now());
         pedido.setHorario(LocalTime.now());
+        pedido.setStatus("Pendente");
         double totalPedido = 0.0;
         double volumeTotalProduto = 0.0;
 
@@ -66,9 +67,7 @@ public class PedidoService implements IPedidoService {
             Estoque estoque = fornecedor.getEstoques().get(0);
             EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
 
-            if (pedidoProdutoDto.getQuantidade() > estoqueProduto.getQuantidade()) {
-                throw new IllegalArgumentException("Quantidade do produto " + produto.getNomeComercial() + " no pedido é maior do que a disponível em estoque");
-            }
+
 
             if (pedidoProdutoDto.getQuantidade() <= 0) {
                 throw new IllegalArgumentException("A quantidade do produto deve ser maior que zero");
