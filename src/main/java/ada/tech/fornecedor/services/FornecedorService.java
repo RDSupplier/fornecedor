@@ -177,9 +177,7 @@ public class FornecedorService implements IFornecedorService {
                 for (PedidoProduto pedidoProduto : produto.getPedidoProduto()) {
                     Pedido pedido = pedidoProduto.getPedidos();
 
-                    if (pedido.getStatus().equalsIgnoreCase("Em Separação") ||
-                            pedido.getStatus().equalsIgnoreCase("Em separacao") ||
-                            pedido.getStatus().equalsIgnoreCase("Em Transporte")) {
+                    if (pedido.getStatus().equalsIgnoreCase("Em Transporte")) {
                         temPedidosPendentes = true;
                         break;
                     }
