@@ -1,11 +1,15 @@
 package ada.tech.fornecedor.services;
+import ada.tech.fornecedor.domain.dto.EstoqueProdutoDto;
 import ada.tech.fornecedor.domain.dto.PedidoDto;
 import ada.tech.fornecedor.domain.dto.PedidoProdutoDto;
+import ada.tech.fornecedor.domain.dto.ProdutoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
 import ada.tech.fornecedor.repositories.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,7 +28,11 @@ public class PedidoService implements IPedidoService {
     private final LogisticaService logisticaService;
 
     private final IEstoqueRepository estoqueRepository;
+
     private final IEstoqueProdutoRepository estoqueProdutoRepository;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public Endereco mockEnderecoDestino() {
         return Endereco.builder()
@@ -117,6 +125,7 @@ public class PedidoService implements IPedidoService {
         return PedidoMapper.toDto(searchPedidoById(id));
     }
 
+
     @Override
     public PedidoDto atualizarPedido(int id, PedidoDto pedidoDto) throws NotFoundException {
         final Pedido pedido = repository.findById(id).orElseThrow(() -> new NotFoundException(Pedido.class, String.valueOf(id)));
@@ -124,9 +133,44 @@ public class PedidoService implements IPedidoService {
         pedido.setHorario(LocalTime.now());
         pedido.setTotal(pedidoDto.getTotal());
         pedido.setStatus(pedidoDto.getStatus());
+
+        // caso o status do pedido for cancelado ou recusado, retornar os produtos ao estoque
+        if (pedido.getStatus().equalsIgnoreCase("cancelado") || pedido.getStatus().equalsIgnoreCase("recusado")) {
+            System.out.println("CANCELADO OU RECUSADO");
+
+            for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
+                System.out.println(pedidoDto.getProdutos()); // lista de produtos
+                System.out.println(pedidoProdutoDto); // cada produto, que está no formato pedidoProdutoDto
+
+                System.out.println("Retornando produto de id: " + pedidoProdutoDto.getId() + " na quantidade: " + pedidoProdutoDto.getQuantidade() + " ao estoque");
+                System.out.println("Id do estoque do fornecedor: " + pedidoDto.getFornecedor());
+
+                // obter o produto
+                Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
+                        .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+                // obter o estoque do fornecedor
+                Fornecedor fornecedor = fornecedorRepository.findById(pedidoDto.getFornecedor())
+                        .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
+                Estoque estoque = fornecedor.getEstoques().get(0); // capturando o estoque
+
+                // obter o estoqueProduto
+                EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
+
+                // atualizar a quantidade no estoque
+                estoqueProduto.setQuantidade(estoqueProduto.getQuantidade() + pedidoProdutoDto.getQuantidade());
+                estoqueProdutoRepository.save(estoqueProduto);
+
+                // verificação
+                System.out.println("Produto ID: " + pedidoProdutoDto.getId() + " atualizado no estoque com nova quantidade: " + estoqueProduto.getQuantidade());
+            }
+        }
+
         pedido.setVolumeTotal(pedidoDto.getVolumeTotal());
         return PedidoMapper.toDto(repository.save(pedido));
     }
+
+
 
     @Override
     public void deletarPedido(int id) throws NotFoundException {
