@@ -48,7 +48,7 @@ public class ProdutoService implements IProdutoService{
 
         Produto produto = ProdutoMapper.toEntity(produtoDto);
         produto.setFabricante(fabricanteExistente);
-        produto.setAtivo(true);
+        produto.setStatus("Ativo");
 
         adicionarCategorias(produto, produtoDto.getCategorias());
 
@@ -115,7 +115,7 @@ public class ProdutoService implements IProdutoService{
         produto.setCargaPerigosa(produtoDto.isCargaPerigosa());
         produto.setVolume(produtoDto.getVolume());
         produto.setFabricante(fabricanteExistente);
-        produto.setAtivo(produtoDto.isAtivo());
+        produto.setStatus(produtoDto.getStatus());
 
 
         return ProdutoMapper.toDto(repository.save(produto));

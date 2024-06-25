@@ -61,5 +61,6 @@ public class Produto {
     @Size(max = 13, message = "O código de barras não exceder 13 caracteres")
     private String codigoBarras;
 
-    private boolean ativo;
+    @Size(max = 18, message = "O status do produto não pode exceder 18 caracteres")
+    private String status;
 }

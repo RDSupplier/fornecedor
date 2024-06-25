@@ -64,6 +64,7 @@ public class ProdutoDto {
     @NotNull
     private String codigoBarras;
 
-    @Column(name = "ativo", nullable = false)
-    private boolean ativo = true;
+    @NotBlank
+    @NotEmpty
+    private String status = "Ativo";
 }
