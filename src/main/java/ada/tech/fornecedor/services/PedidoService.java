@@ -75,7 +75,9 @@ public class PedidoService implements IPedidoService {
             Estoque estoque = fornecedor.getEstoques().get(0);
             EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
 
-
+            if ("Inativo".equalsIgnoreCase(produto.getStatus())) {
+                throw new IllegalArgumentException("Produto " + produto.getNomeComercial() + " não pode ser adicionado ao pedido por estar inativo");
+            }
 
             if (pedidoProdutoDto.getQuantidade() <= 0) {
                 throw new IllegalArgumentException("A quantidade do produto deve ser maior que zero");
