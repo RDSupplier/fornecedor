@@ -81,6 +81,9 @@ public class PedidoService implements IPedidoService {
                 throw new IllegalArgumentException("A quantidade do produto deve ser maior que zero");
             }
 
+
+            int quantidadeDisponivel = Math.min(pedidoProdutoDto.getQuantidade(), estoqueProduto.getQuantidade());
+
             volumeTotalProduto = produto.getVolume() * pedidoProdutoDto.getQuantidade();
             double precoTotalProduto = produto.getPreco() * pedidoProdutoDto.getQuantidade();
             totalPedido += precoTotalProduto;
@@ -88,7 +91,7 @@ public class PedidoService implements IPedidoService {
             PedidoProduto pedidoProduto = new PedidoProduto();
             pedidoProduto.setPedidos(pedido);
             pedidoProduto.setProdutos(produto);
-            pedidoProduto.setQuantidade(pedidoProdutoDto.getQuantidade());
+            pedidoProduto.setQuantidade(quantidadeDisponivel);
             pedidoProduto.setVolumeTotal(volumeTotalProduto);
 
             pedidoProdutos.add(pedidoProduto);
