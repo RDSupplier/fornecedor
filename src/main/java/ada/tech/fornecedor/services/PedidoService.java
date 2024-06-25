@@ -68,6 +68,12 @@ public class PedidoService implements IPedidoService {
         fornecedor.setEnderecos(endereco);
         pedido.setEndereco(enderecoDestino);
 
+        boolean todosProdutosZero = pedidoDto.getProdutos().stream().allMatch(p -> p.getQuantidade() == 0);
+
+        if (todosProdutosZero) {
+            throw new IllegalArgumentException("Não é possível criar um pedido com todos os produtos tendo quantidade zero");
+        }
+
         for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
             Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
