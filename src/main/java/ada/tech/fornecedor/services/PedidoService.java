@@ -90,19 +90,28 @@ public class PedidoService implements IPedidoService {
             }
 
 
-            int quantidadeDisponivel = Math.min(pedidoProdutoDto.getQuantidade(), estoqueProduto.getQuantidade());
+            int quantidadeSolicitada = pedidoProdutoDto.getQuantidade();
+            int quantidadeDisponivel = Math.min(quantidadeSolicitada, estoqueProduto.getQuantidade());
 
-            volumeTotalProduto = produto.getVolume() * pedidoProdutoDto.getQuantidade();
-            double precoTotalProduto = produto.getPreco() * pedidoProdutoDto.getQuantidade();
+
+            System.out.println("Produto: " + produto.getNomeComercial());
+            System.out.println("Quantidade Solicitada: " + quantidadeSolicitada);
+            System.out.println("Quantidade Disponível: " + quantidadeDisponivel);
+
+            volumeTotalProduto += produto.getVolume() * quantidadeDisponivel;
+            double precoTotalProduto = produto.getPreco() * quantidadeDisponivel;
             totalPedido += precoTotalProduto;
 
             PedidoProduto pedidoProduto = new PedidoProduto();
             pedidoProduto.setPedidos(pedido);
             pedidoProduto.setProdutos(produto);
-            pedidoProduto.setQuantidade(quantidadeDisponivel);
-            pedidoProduto.setVolumeTotal(volumeTotalProduto);
+            pedidoProduto.setQuantidade(quantidadeSolicitada);
+            pedidoProduto.setQuantidadeAtendida(quantidadeDisponivel);
+            pedidoProduto.setVolumeTotal(produto.getVolume() * quantidadeSolicitada);
 
             pedidoProdutos.add(pedidoProduto);
+            System.out.println("PedidoProduto - Quantidade: " + pedidoProduto.getQuantidade());
+            System.out.println("PedidoProduto - Quantidade Atendida: " + pedidoProduto.getQuantidadeAtendida());
 
             estoqueProduto.setQuantidade(estoqueProduto.getQuantidade() - quantidadeDisponivel);
             estoqueProdutoRepository.save(estoqueProduto);

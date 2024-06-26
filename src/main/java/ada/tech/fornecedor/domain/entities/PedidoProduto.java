@@ -31,6 +31,11 @@ public class PedidoProduto {
     @Column(length = 20)
     private int quantidade;
 
+    @Size(max = 20, message = "A quantidade de produtos atendida do pedido não pode exceder 20 caracteres")
+    @Column(length = 20)
+    private int quantidadeAtendida;
+
+
     @Column(name = "volume_total", precision = 10)
     private double volumeTotal;
 }

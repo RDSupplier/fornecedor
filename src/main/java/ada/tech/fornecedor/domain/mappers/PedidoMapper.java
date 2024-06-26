@@ -54,6 +54,7 @@ public class PedidoMapper {
         return PedidoProdutoDto.builder()
                 .id(produto.getId())
                 .quantidade(pedidoProduto.getQuantidade())
+                .quantidadeAtendida(pedidoProduto.getQuantidadeAtendida())
                 .volumeTotal(pedidoProduto.getVolumeTotal())
                 .produto(ProdutoDto.builder()
                         .id(produto.getId())
