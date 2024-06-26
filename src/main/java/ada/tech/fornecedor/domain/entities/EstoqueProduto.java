@@ -28,4 +28,36 @@ public class EstoqueProduto {
 
     @PositiveOrZero
     private int quantidade;
+
+    @PositiveOrZero
+    private int quantidadeReservada;
+
+    public int reservarQuantidadeParcial(int quantidade) {
+        int quantidadeDisponivel = this.quantidade - this.quantidadeReservada;
+        int quantidadeReservada = Math.min(quantidade, quantidadeDisponivel);
+        this.quantidadeReservada += quantidadeReservada;
+        return quantidadeReservada;
+    }
+
+    public void liberarReserva(int quantidade) {
+        System.out.println("quantidade: " + quantidade);
+        if (quantidade <= this.quantidadeReservada) {
+            this.quantidadeReservada -= quantidade;
+            this.quantidade -= quantidade;
+        } else {
+            throw new IllegalArgumentException("Quantidade a liberar excede a quantidade reservada.");
+        }
+    }
+
+    public void confirmarReserva(int quantidade) {
+        validarQuantidadeReservada(quantidade);
+        this.quantidade -= quantidade;
+        this.quantidadeReservada -= quantidade;
+    }
+
+    private void validarQuantidadeReservada(int quantidade) {
+        if (quantidade > this.quantidadeReservada) {
+            throw new IllegalStateException("A quantidade a confirmar excede a quantidade reservada.");
+        }
+    }
 }

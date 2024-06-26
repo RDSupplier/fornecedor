@@ -6,6 +6,7 @@ import ada.tech.fornecedor.domain.dto.ProdutoDto;
 import ada.tech.fornecedor.domain.dto.exceptions.NotFoundException;
 import ada.tech.fornecedor.domain.entities.*;
 import ada.tech.fornecedor.domain.mappers.PedidoMapper;
+import ada.tech.fornecedor.domain.mappers.PedidoProdutoMapper;
 import ada.tech.fornecedor.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ public class PedidoService implements IPedidoService {
                 .cep(11350186)
                 .build();
     }
+
     @Override
     public PedidoDto criarPedido(PedidoDto pedidoDto) {
         Pedido pedido = new Pedido();
@@ -89,14 +91,15 @@ public class PedidoService implements IPedidoService {
                 throw new IllegalArgumentException("A quantidade do produto deve ser maior que zero");
             }
 
-
             int quantidadeSolicitada = pedidoProdutoDto.getQuantidade();
-            int quantidadeDisponivel = Math.min(quantidadeSolicitada, estoqueProduto.getQuantidade());
+            int quantidadeDisponivel = estoqueProduto.reservarQuantidadeParcial(quantidadeSolicitada);
+            int quantidadeAtendida = 0;
 
-
-            System.out.println("Produto: " + produto.getNomeComercial());
-            System.out.println("Quantidade Solicitada: " + quantidadeSolicitada);
-            System.out.println("Quantidade Disponível: " + quantidadeDisponivel);
+            if (quantidadeDisponivel < quantidadeSolicitada) {
+                quantidadeAtendida = quantidadeDisponivel;
+            } else {
+                quantidadeAtendida = quantidadeSolicitada;
+            }
 
             volumeTotalProduto += produto.getVolume() * quantidadeDisponivel;
             double precoTotalProduto = produto.getPreco() * quantidadeDisponivel;
@@ -110,29 +113,22 @@ public class PedidoService implements IPedidoService {
             pedidoProduto.setVolumeTotal(produto.getVolume() * quantidadeSolicitada);
 
             pedidoProdutos.add(pedidoProduto);
-            System.out.println("PedidoProduto - Quantidade: " + pedidoProduto.getQuantidade());
-            System.out.println("PedidoProduto - Quantidade Atendida: " + pedidoProduto.getQuantidadeAtendida());
-
-            estoqueProduto.setQuantidade(estoqueProduto.getQuantidade() - quantidadeDisponivel);
-            estoqueProdutoRepository.save(estoqueProduto);
         }
 
         pedido.setTotal(totalPedido);
         pedido.setVolumeTotal(volumeTotalProduto);
         pedido.setStatus(pedidoDto.getStatus());
 
-        Pedido pedidoSalvo = repository.save(pedido);
-
         for (PedidoProduto pedidoProduto : pedidoProdutos) {
-            pedidoProduto.setPedidos(pedidoSalvo);
+            pedidoProduto.setPedidos(pedido);
         }
 
-        pedidoSalvo.getPedidoProduto().addAll(pedidoProdutos);
-        pedidoSalvo = repository.save(pedidoSalvo);
+        pedido.getPedidoProduto().addAll(pedidoProdutos);
+        pedido = repository.save(pedido);
 
-        logisticaService.enviarDadosLogistica(pedidoSalvo);
+        logisticaService.enviarDadosLogistica(pedido);
 
-        return PedidoMapper.toDto(pedidoSalvo);
+        return PedidoMapper.toDto(pedido);
     }
 
     @Override
@@ -148,49 +144,36 @@ public class PedidoService implements IPedidoService {
 
     @Override
     public PedidoDto atualizarPedido(int id, PedidoDto pedidoDto) throws NotFoundException {
-        final Pedido pedido = repository.findById(id).orElseThrow(() -> new NotFoundException(Pedido.class, String.valueOf(id)));
+        final Pedido pedido = searchPedidoById(id);
+        PedidoDto dto = PedidoMapper.toDto(pedido);
+        List<PedidoProduto> pedidoProdutos = new ArrayList<>();
         pedido.setData(LocalDate.now());
         pedido.setHorario(LocalTime.now());
         pedido.setTotal(pedidoDto.getTotal());
         pedido.setStatus(pedidoDto.getStatus());
 
-        // caso o status do pedido for cancelado ou recusado, retornar os produtos ao estoque
-        if (pedido.getStatus().equalsIgnoreCase("cancelado") || pedido.getStatus().equalsIgnoreCase("recusado")) {
-            System.out.println("CANCELADO OU RECUSADO");
+        for (PedidoProdutoDto pedidoProdutoDto : dto.getProdutos()) {
+            PedidoProduto pedidoProduto = PedidoProdutoMapper.toEntity(pedidoProdutoDto);
 
-            for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
-                System.out.println(pedidoDto.getProdutos()); // lista de produtos
-                System.out.println(pedidoProdutoDto); // cada produto, que está no formato pedidoProdutoDto
+            Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-                System.out.println("Retornando produto de id: " + pedidoProdutoDto.getId() + " na quantidade: " + pedidoProdutoDto.getQuantidade() + " ao estoque");
-                System.out.println("Id do estoque do fornecedor: " + pedidoDto.getFornecedor());
+            Fornecedor fornecedor = fornecedorRepository.findById(pedidoDto.getFornecedor())
+                    .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
+            Estoque estoque = fornecedor.getEstoques().get(0);
 
-                // obter o produto
-                Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
-                        .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+            EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
 
-                // obter o estoque do fornecedor
-                Fornecedor fornecedor = fornecedorRepository.findById(pedidoDto.getFornecedor())
-                        .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
-                Estoque estoque = fornecedor.getEstoques().get(0); // capturando o estoque
-
-                // obter o estoqueProduto
-                EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
-
-                // atualizar a quantidade no estoque
+            if (pedido.getStatus().equalsIgnoreCase("cancelado") || pedido.getStatus().equalsIgnoreCase("recusado")) {
                 estoqueProduto.setQuantidade(estoqueProduto.getQuantidade() + pedidoProdutoDto.getQuantidade());
-                estoqueProdutoRepository.save(estoqueProduto);
-
-                // verificação
-                System.out.println("Produto ID: " + pedidoProdutoDto.getId() + " atualizado no estoque com nova quantidade: " + estoqueProduto.getQuantidade());
+            } else if(pedido.getStatus().equalsIgnoreCase("em separacao") || pedido.getStatus().equalsIgnoreCase("em separacão")) {
+                estoqueProduto.liberarReserva(pedidoProdutoDto.getQuantidadeAtendida());
             }
         }
 
         pedido.setVolumeTotal(pedidoDto.getVolumeTotal());
         return PedidoMapper.toDto(repository.save(pedido));
     }
-
-
 
     @Override
     public void deletarPedido(int id) throws NotFoundException {

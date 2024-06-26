@@ -26,4 +26,8 @@ public class EstoqueProdutoDto {
     @PositiveOrZero
     @NotNull
     private int quantidade;
+
+    @PositiveOrZero
+    @NotNull
+    private int quantidadeReservada;
 }

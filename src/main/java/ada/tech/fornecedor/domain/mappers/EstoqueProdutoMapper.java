@@ -14,6 +14,7 @@ public class EstoqueProdutoMapper {
 //                .estoque(EstoqueMapper.toEntity(dto.getEstoqueDto()))
                 .produto(ProdutoMapper.toEntity(dto.getProdutoDto()))
                 .quantidade(dto.getQuantidade())
+                .quantidadeReservada(dto.getQuantidadeReservada())
                 .build();
     }
 
@@ -27,6 +28,7 @@ public class EstoqueProdutoMapper {
 //                .estoqueDto(EstoqueMapper.toDto(entity.getEstoque()))
                 .produtoDto(ProdutoMapper.toDto(entity.getProduto()))
                 .quantidade(entity.getQuantidade())
+                .quantidadeReservada(entity.getQuantidadeReservada())
                 .build();
     }
 }

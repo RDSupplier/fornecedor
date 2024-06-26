@@ -77,6 +77,8 @@ public class EstoqueService implements IEstoqueService {
             estoqueProduto.setQuantidade(estoqueProdutoDto.getQuantidade());
         }
 
+        estoqueProduto.setQuantidadeReservada(0);
+
         estoqueProdutoRepository.save(estoqueProduto);
 
         return EstoqueMapper.toDto(estoque);
