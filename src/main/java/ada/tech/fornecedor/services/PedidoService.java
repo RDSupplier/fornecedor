@@ -104,7 +104,7 @@ public class PedidoService implements IPedidoService {
 
             pedidoProdutos.add(pedidoProduto);
 
-            estoqueProduto.setQuantidade(estoqueProduto.getQuantidade() - pedidoProdutoDto.getQuantidade());
+            estoqueProduto.setQuantidade(estoqueProduto.getQuantidade() - quantidadeDisponivel);
             estoqueProdutoRepository.save(estoqueProduto);
         }
 
