@@ -40,15 +40,19 @@ public class PedidoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoDto> atualizarPedido(
+    public ResponseEntity<?> atualizarPedido(
             @PathVariable("id") int id,
             @RequestBody PedidoDto pedidoDto
     ) throws NotFoundException {
-        final PedidoDto pedido = pedidoService.atualizarPedido(id, pedidoDto);
-        if (pedido == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        try {
+            final PedidoDto pedido = pedidoService.atualizarPedido(id, pedidoDto);
+            if (pedido == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+            return ResponseEntity.ok(pedido);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
-        return ResponseEntity.ok(pedido);
     }
 
     @DeleteMapping("/{id}")

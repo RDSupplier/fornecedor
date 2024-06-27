@@ -39,8 +39,7 @@ public class EstoqueProduto {
         return quantidadeReservada;
     }
 
-    public void liberarReserva(int quantidade) {
-        System.out.println("quantidade: " + quantidade);
+    public void confirmarReserva(int quantidade) {
         if (quantidade <= this.quantidadeReservada) {
             this.quantidadeReservada -= quantidade;
             this.quantidade -= quantidade;
@@ -49,10 +48,12 @@ public class EstoqueProduto {
         }
     }
 
-    public void confirmarReserva(int quantidade) {
-        validarQuantidadeReservada(quantidade);
-        this.quantidade -= quantidade;
-        this.quantidadeReservada -= quantidade;
+    public void cancelarReserva(int quantidadeAtendida, String statusPedido) {
+        if ("cancelado".equalsIgnoreCase(statusPedido)) {
+            this.quantidade += quantidadeAtendida;
+        } else {
+            this.quantidadeReservada -= quantidadeAtendida;
+        }
     }
 
     private void validarQuantidadeReservada(int quantidade) {

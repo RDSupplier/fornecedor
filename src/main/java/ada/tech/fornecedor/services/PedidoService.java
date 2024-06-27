@@ -117,7 +117,7 @@ public class PedidoService implements IPedidoService {
 
         pedido.setTotal(totalPedido);
         pedido.setVolumeTotal(volumeTotalProduto);
-        pedido.setStatus(pedidoDto.getStatus());
+        pedido.setStatus("Pendente");
 
         for (PedidoProduto pedidoProduto : pedidoProdutos) {
             pedidoProduto.setPedidos(pedido);
@@ -146,15 +146,38 @@ public class PedidoService implements IPedidoService {
     public PedidoDto atualizarPedido(int id, PedidoDto pedidoDto) throws NotFoundException {
         final Pedido pedido = searchPedidoById(id);
         PedidoDto dto = PedidoMapper.toDto(pedido);
-        List<PedidoProduto> pedidoProdutos = new ArrayList<>();
         pedido.setData(LocalDate.now());
         pedido.setHorario(LocalTime.now());
         pedido.setTotal(pedidoDto.getTotal());
-        pedido.setStatus(pedidoDto.getStatus());
+
+        switch (pedido.getStatus().toLowerCase()) {
+            case "pendente":
+                if (!pedidoDto.getStatus().equalsIgnoreCase("em separação")) {
+                    throw new IllegalStateException("Não é possível alterar o status de um pedido pendente para: " + pedidoDto.getStatus());
+                }
+                break;
+            case "em separação":
+                if (!pedidoDto.getStatus().equalsIgnoreCase("cancelado") &&
+                        !pedidoDto.getStatus().equalsIgnoreCase("em transporte")) {
+                    throw new IllegalStateException("Não é possível alterar o status de um pedido em separação para: " + pedidoDto.getStatus());
+                }
+                break;
+            case "em transporte":
+                if (!pedidoDto.getStatus().equalsIgnoreCase("cancelado") &&
+                        !pedidoDto.getStatus().equalsIgnoreCase("recusado") &&
+                        !pedidoDto.getStatus().equalsIgnoreCase("entregue")) {
+                    throw new IllegalStateException("Não é possível alterar o status de um pedido em transporte para: " + pedidoDto.getStatus());
+                }
+                break;
+            case "entregue":
+            case "cancelado":
+            case "recusado":
+                throw new IllegalStateException("Não é possível alterar o status de um pedido que já foi entregue, cancelado ou recusado.");
+            default:
+                throw new IllegalStateException("Status de pedido inválido: " + pedido.getStatus());
+        }
 
         for (PedidoProdutoDto pedidoProdutoDto : dto.getProdutos()) {
-            PedidoProduto pedidoProduto = PedidoProdutoMapper.toEntity(pedidoProdutoDto);
-
             Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
                     .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
@@ -164,16 +187,36 @@ public class PedidoService implements IPedidoService {
 
             EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
 
-            if (pedido.getStatus().equalsIgnoreCase("cancelado") || pedido.getStatus().equalsIgnoreCase("recusado")) {
-                estoqueProduto.setQuantidade(estoqueProduto.getQuantidade() + pedidoProdutoDto.getQuantidade());
-            } else if(pedido.getStatus().equalsIgnoreCase("em separacao") || pedido.getStatus().equalsIgnoreCase("em separacão")) {
-                estoqueProduto.liberarReserva(pedidoProdutoDto.getQuantidadeAtendida());
+            switch (pedido.getStatus().toLowerCase()) {
+                case "pendente":
+                    if (!pedidoDto.getStatus().equalsIgnoreCase("em separação")) {
+                        estoqueProduto.confirmarReserva(pedidoProdutoDto.getQuantidadeAtendida());
+                    }
+                    break;
+                case "em separação":
+                    if (pedidoDto.getStatus().equalsIgnoreCase("em transporte")) {
+                        estoqueProduto.confirmarReserva(pedidoProdutoDto.getQuantidadeAtendida());
+                    } else if (pedidoDto.getStatus().equalsIgnoreCase("cancelado")) {
+                        estoqueProduto.cancelarReserva(pedidoProdutoDto.getQuantidadeAtendida(), "recusado");
+                    }
+                    break;
+                case "em transporte":
+                    if (pedidoDto.getStatus().equalsIgnoreCase("cancelado") ||
+                            pedidoDto.getStatus().equalsIgnoreCase("recusado")) {
+                        estoqueProduto.cancelarReserva(pedidoProdutoDto.getQuantidadeAtendida(), "cancelado");
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
+        pedido.setStatus(pedidoDto.getStatus());
         pedido.setVolumeTotal(pedidoDto.getVolumeTotal());
         return PedidoMapper.toDto(repository.save(pedido));
     }
+
+
 
     @Override
     public void deletarPedido(int id) throws NotFoundException {
