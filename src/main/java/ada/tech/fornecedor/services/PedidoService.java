@@ -48,7 +48,7 @@ public class PedidoService implements IPedidoService {
     }
 
     @Override
-    public PedidoDto criarPedido(PedidoDto pedidoDto) {
+    public PedidoDto criarPedido(PedidoDto pedidoDto) throws NotFoundException {
         Pedido pedido = new Pedido();
         List<PedidoProduto> pedidoProdutos = new ArrayList<>();
         pedido.setData(LocalDate.now());
@@ -58,7 +58,7 @@ public class PedidoService implements IPedidoService {
         double volumeTotalProduto = 0.0;
 
         Fornecedor fornecedor = fornecedorRepository.findById(pedidoDto.getFornecedor())
-                .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
+                .orElseThrow(() -> new NotFoundException(Fornecedor.class, String.valueOf(pedidoDto.getFornecedor())));
         pedido.setFornecedor(fornecedor);
 
         Endereco endereco = fornecedor.getEnderecos();
@@ -78,7 +78,7 @@ public class PedidoService implements IPedidoService {
 
         for (PedidoProdutoDto pedidoProdutoDto : pedidoDto.getProdutos()) {
             Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                    .orElseThrow(() -> new NotFoundException(Produto.class, String.valueOf(pedidoProdutoDto.getId())));
 
             Estoque estoque = fornecedor.getEstoques().get(0);
             EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
@@ -113,6 +113,12 @@ public class PedidoService implements IPedidoService {
             pedidoProduto.setVolumeTotal(produto.getVolume() * quantidadeSolicitada);
 
             pedidoProdutos.add(pedidoProduto);
+        }
+
+        boolean qtdAtendidaZero = pedidoProdutos.stream().allMatch(p -> p.getQuantidadeAtendida() == 0);
+
+        if (qtdAtendidaZero) {
+            throw new IllegalArgumentException("Todos produtos escolhidos estão fora de estoque!");
         }
 
         pedido.setTotal(totalPedido);
@@ -179,10 +185,10 @@ public class PedidoService implements IPedidoService {
 
         for (PedidoProdutoDto pedidoProdutoDto : dto.getProdutos()) {
             Produto produto = produtoRepository.findById(pedidoProdutoDto.getId())
-                    .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                    .orElseThrow(() -> new NotFoundException(Produto.class, String.valueOf(pedidoProdutoDto.getProduto().getId())));
 
             Fornecedor fornecedor = fornecedorRepository.findById(pedidoDto.getFornecedor())
-                    .orElseThrow(() -> new RuntimeException("Fornecedor não encontrado"));
+                    .orElseThrow(() -> new NotFoundException(Fornecedor.class, String.valueOf(pedidoDto.getFornecedor())));
             Estoque estoque = fornecedor.getEstoques().get(0);
 
             EstoqueProduto estoqueProduto = estoqueProdutoRepository.findByEstoqueAndProduto(estoque, produto);
@@ -215,8 +221,6 @@ public class PedidoService implements IPedidoService {
         pedido.setVolumeTotal(pedidoDto.getVolumeTotal());
         return PedidoMapper.toDto(repository.save(pedido));
     }
-
-
 
     @Override
     public void deletarPedido(int id) throws NotFoundException {

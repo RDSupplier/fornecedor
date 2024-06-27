@@ -21,10 +21,18 @@ public class PedidoController {
     }
 
     @PostMapping
-    public ResponseEntity<PedidoDto> criarPedido(
+    public ResponseEntity<?> criarPedido(
             @RequestBody PedidoDto pedidoDto
     ){
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.criarPedido(pedidoDto));
+        try{
+            return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.criarPedido(pedidoDto));
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping
@@ -46,9 +54,6 @@ public class PedidoController {
     ) throws NotFoundException {
         try {
             final PedidoDto pedido = pedidoService.atualizarPedido(id, pedidoDto);
-            if (pedido == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
             return ResponseEntity.ok(pedido);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
