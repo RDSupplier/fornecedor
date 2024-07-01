@@ -57,8 +57,6 @@ public class ProdutoService implements IProdutoService{
         return ProdutoMapper.toDto(produto);
     }
 
-
-
     public List<ProdutoDto> listarProdutos() {
         return repository.findAll().stream().map(ProdutoMapper::toDto).toList();
     }

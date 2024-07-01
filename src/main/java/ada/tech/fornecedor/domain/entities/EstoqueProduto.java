@@ -32,6 +32,11 @@ public class EstoqueProduto {
     @PositiveOrZero
     private int quantidadeReservada;
 
+    public int setQuantidade(int quantidade) {
+        this.quantidade += quantidade;
+        return quantidade;
+    }
+
     public int reservarQuantidadeParcial(int quantidade) {
         int quantidadeDisponivel = this.quantidade - this.quantidadeReservada;
         int quantidadeReservada = Math.min(quantidade, quantidadeDisponivel);
